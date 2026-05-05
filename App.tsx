@@ -216,12 +216,6 @@ const categoryModules: Record<string, ModuleLink[]> = {
       group: 'Neonatal Solunum',
     },
     {
-      title: 'Aşılar ve Monoklonal Antikorlar',
-      description: 'Pnömokok, RSV monoklonal antikor ve influenza doz/aralık hatırlatıcısı.',
-      target: 'respiratoryImmunization',
-      group: 'Koruyucu Solunum Sağlığı',
-    },
-    {
       title: 'Pnömoni',
       description: 'Toplumda gelişen ve immün baskılanmış çocukta pnömoni algoritması.',
       target: 'pediatricPneumonia',
@@ -315,6 +309,12 @@ const categoryModules: Record<string, ModuleLink[]> = {
       title: 'Sistemik Steroidler',
       description: 'Glukokortikoid eşdeğerleri ve pediatrik solunum kısa kür doz hatırlatıcıları.',
       target: 'systemicSteroids',
+      group: 'İlaçlar',
+    },
+    {
+      title: 'Aşılar ve Monoklonal Antikorlar',
+      description: 'Pnömokok, RSV monoklonal antikor ve influenza doz/aralık hatırlatıcısı.',
+      target: 'respiratoryImmunization',
       group: 'İlaçlar',
     },
     {
