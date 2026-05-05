@@ -22,7 +22,7 @@ export const respiratoryImmunizationSource = {
   badge:
     'Kaynak sürümü: CDC/ACIP 2025-2026 + EMA/FDA ürün bilgileri — Türkiye KÜB/KT, Ulusal Aşı Takvimi, SUT/geri ödeme ve kurum protokolü ile doğrulanmalıdır.',
   warning:
-    'Bu modül aşı veya monoklonal antikor uygulama kararı vermez; eğitim ve hızlı hatırlatma amacı taşır. Endikasyon, kontrendikasyon, ürün yaşı, sezon, önceki dozlar, risk grubu, stok/geri ödeme ve kurum protokolü klinisyen tarafından doğrulanmalıdır.',
+    'Bu modül aşı veya monoklonal antikor uygulama kararı vermez; eğitim ve hızlı hatırlatma amacı taşır. Endikasyon, kontrendikasyon, ürün yaşı, sezon, önceki dozlar, RSV için maternal aşı durumu, stok/geri ödeme ve kurum protokolü klinisyen tarafından doğrulanmalıdır.',
   sourceLinks: [
     {
       title: 'CDC. Pneumococcal Vaccine Recommendations. Updated 2026.',
@@ -54,7 +54,7 @@ export const respiratoryImmunizationSource = {
 export const riskProfiles: { key: RiskProfile; label: string; note: string }[] = [
   { key: 'none', label: 'Risk yok / rutin', note: 'Rutin yaşa uygun koruma önerileri.' },
   { key: 'chronic_lung', label: 'Kronik akciğer hastalığı', note: 'Orta-ağır astım, BPD, kronik solunum yetmezliği gibi durumlar.' },
-  { key: 'prematurity_bpd', label: 'Prematürite / BPD', note: 'RSV ikinci sezon ve pnömokok risk değerlendirmesi için önemli.' },
+  { key: 'prematurity_bpd', label: 'Prematürite / BPD', note: 'İlk RSV sezonunda risk aranmaz; ikinci sezon ve pnömokok ek risk değerlendirmesinde önemlidir.' },
   { key: 'cf', label: 'Kistik fibrozis', note: 'Grip ve pnömokok risk değerlendirmesinde özellikle not edilir.' },
   { key: 'chd', label: 'Hemodinamik anlamlı KKH', note: 'RSV ve pnömokok risk değerlendirmesinde önemlidir.' },
   { key: 'immunocompromised', label: 'İmmünsüpresyon', note: 'Pnömokok ek doz ve canlı aşı uyarıları için kritik.' },
@@ -92,11 +92,11 @@ export const rsvCards = [
     title: 'Nirsevimab',
     brands: 'Beyfortus',
     role: 'Uzun etkili RSV monoklonal antikoru',
-    dose: '<8 ay ilk RSV sezonu: <5 kg 50 mg IM tek doz; ≥5 kg 100 mg IM tek doz. 8–19 ay yüksek riskli ikinci sezon: 200 mg IM, iki ayrı 100 mg enjeksiyon.',
+    dose: '<8 ay ve ilk RSV sezonuna giren tüm bebekler: <5 kg 50 mg IM tek doz; ≥5 kg 100 mg IM tek doz. 8–19 ay yüksek riskli ikinci sezon: 200 mg IM, iki ayrı 100 mg enjeksiyon.',
     interval:
       'Sezon başlamadan hemen önce veya RSV sezonunda doğan bebekte doğumdan sonra mümkün olan erken dönemde uygulanır. Çocukluk aşılarıyla zamanlama açısından birlikte uygulanabilir; farklı enjektör ve farklı bölge kullanılır.',
     note:
-      'Maternal RSV aşısı uygulanmışsa çoğu bebekte ayrıca RSV antikoru gerekmeyebilir; ülke/kurum önerisiyle doğrula.',
+      'İlk RSV sezonunda risk faktörü aranmaz. Maternal RSV aşısı uygulanmışsa bazı rehberlerde çoğu bebekte ayrıca RSV antikoru gerekmeyebilir; ülke/kurum önerisiyle doğrula.',
   },
   {
     title: 'Palivizumab',
@@ -148,9 +148,13 @@ export function getRsvRecommendation(input: RespiratoryImmunizationInput) {
   if (age === null) return 'Yaş girildiğinde RSV monoklonal antikor notu gösterilir.';
 
   if (input.rsvSeasonContext === 'first_season' && age < 8) {
-    if (weight === null) return 'İlk RSV sezonunda <8 ay bebek için nirsevimab düşünülebilir; doz için kilo gerekir.';
-    if (weight < 5) return 'Nirsevimab: 50 mg IM tek doz; resmi ürün bilgisi ve yerel erişimle doğrula.';
-    return 'Nirsevimab: 100 mg IM tek doz; resmi ürün bilgisi ve yerel erişimle doğrula.';
+    if (weight === null) {
+      return 'İlk RSV sezonuna giren <8 ay tüm bebekler için nirsevimab öneri kapsamındadır; doz seçimi için kilo gerekir. Maternal RSV aşısı/yerel protokol istisnalarını doğrula.';
+    }
+    if (weight < 5) {
+      return 'İlk RSV sezonu: risk aranmadan nirsevimab 50 mg IM tek doz; maternal RSV aşısı/yerel protokol ve erişim koşullarıyla doğrula.';
+    }
+    return 'İlk RSV sezonu: risk aranmadan nirsevimab 100 mg IM tek doz; maternal RSV aşısı/yerel protokol ve erişim koşullarıyla doğrula.';
   }
 
   if (input.rsvSeasonContext === 'second_season' && age >= 8 && age <= 19) {
