@@ -126,6 +126,14 @@ export const clinicalModuleMetadata: Record<string, ClinicalModuleMetadata> = {
     clinicalEditor: DEFAULT_EDITOR,
     disclaimer: DEFAULT_DISCLAIMER,
   },
+  boFamCalculator: {
+    moduleId: 'boFamCalculator',
+    sourceTitle: 'FAM/BAM bronşiolitis obliterans literatür şemaları',
+    sourceVersion: 'PIBO BAM/BAMA ve post-HCT BOS FAM kaynak özeti; 2026-05-05',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
   pediatricOsasSleep: {
     moduleId: 'pediatricOsasSleep',
     sourceTitle: 'Pediatrik OSAS ve uyku klinik algoritması',

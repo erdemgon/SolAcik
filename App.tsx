@@ -33,6 +33,7 @@ import { ImmunologyReferenceScreen } from './modules/immunology-reference';
 import { TracheostomyScreen } from './modules/tracheostomy';
 import { BalReferenceScreen } from './modules/bal-reference';
 import { BpdCalculatorScreen } from './modules/bpd-calculator';
+import { BoFamCalculatorScreen } from './modules/bo-fam-calculator';
 import { RespiratoryImmunizationScreen } from './modules/respiratory-immunization';
 import { ClinicalSourcePanel } from './components/common/ClinicalSourcePanel';
 import { getClinicalModuleMetadata } from './data/contentGovernance';
@@ -48,6 +49,7 @@ type ScreenKey =
   | 'chronicCough'
   | 'bronchiolitis'
   | 'bpdCalculator'
+  | 'boFamCalculator'
   | 'respiratoryImmunization'
   | 'parapneumonicEffusion'
   | 'childInterstitial'
@@ -290,6 +292,13 @@ const categoryModules: Record<string, ModuleLink[]> = {
       group: 'Nadir / Kompleks Hastalıklar',
       aliases: ['PIBO', 'BO', 'bronşiolitis obliterans', 'bronchiolitis obliterans'],
     },
+    {
+      title: 'BO FAM/BAM Hesaplayıcı',
+      description: 'Post-enfeksiyöz BO ve post-transplant BOS için FAM/BAM şema ve doz hatırlatıcı.',
+      target: 'boFamCalculator',
+      group: 'Nadir / Kompleks Hastalıklar',
+      aliases: ['PIBO', 'BO', 'BOS', 'FAM', 'BAM', 'BAMA', 'transplant', 'azitromisin', 'montelukast'],
+    },
   ],
   categoryProcedures: [
     {
@@ -460,6 +469,13 @@ const categoryModules: Record<string, ModuleLink[]> = {
       target: 'pibo',
       group: 'Nadir Hastalıklar',
       aliases: ['PIBO', 'BO', 'bronşiolitis obliterans', 'bronchiolitis obliterans', 'registry'],
+    },
+    {
+      title: 'BO FAM/BAM Hesaplayıcı',
+      description: 'PIBO ve post-transplant BOS için FAM/BAM literatür şeması ve doz hatırlatıcı.',
+      target: 'boFamCalculator',
+      group: 'Nadir Hastalıklar',
+      aliases: ['PIBO', 'BO', 'BOS', 'FAM', 'BAM', 'BAMA', 'registry'],
     },
     {
       title: 'Kistik Fibrozis Yıllık İzlem Checklist’i',
@@ -893,6 +909,8 @@ export default function App() {
           <BronchiolitisScreen />
         ) : activeScreen === 'bpdCalculator' ? (
           <BpdCalculatorScreen />
+        ) : activeScreen === 'boFamCalculator' ? (
+          <BoFamCalculatorScreen />
         ) : activeScreen === 'respiratoryImmunization' ? (
           <RespiratoryImmunizationScreen />
         ) : activeScreen === 'parapneumonicEffusion' ? (
@@ -1845,6 +1863,22 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     gap: 10,
     padding: 14,
+  },
+  consentBuildBox: {
+    backgroundColor: '#fff7e6',
+    borderColor: '#f0c36a',
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 2,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  consentBuildText: {
+    color: '#8a5a00',
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 15,
+    textAlign: 'center',
   },
   consentBody: {
     color: TEXT,
