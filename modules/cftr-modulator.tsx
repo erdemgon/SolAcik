@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { CLINICAL_NOTE_SAFETY_SENTENCE } from '../components/common/CopyClinicalNoteButton';
 import { SourceVersionBadge } from '../components/common/SourceVersionBadge';
 import { WarningBox } from '../components/common/WarningBox';
 import { CftrVariantInput } from '../components/cftr/CftrVariantInput';
@@ -275,7 +276,7 @@ function buildCopyText({
     .map((result) => `${result.drugName} ${result.rule.region}: ${result.status}; ${result.explanation}`)
     .join(' ');
 
-  return `CFTR modülatör ön uygunluk özeti: Yaş ${ageYears || 'girilmedi'} yıl. Varyantlar: ${variant1 || 'boş'} / ${variant2 || 'boş'}. ${resultText} Bu çıktı reçete/geri ödeme kararı değildir; resmi ürün bilgisi, ülke etiketi ve uzman değerlendirmesi ile doğrulanmalıdır.`;
+  return `CFTR modülatör klinik notu: Yaş ${ageYears || 'girilmedi'} yıl. Varyantlar: ${variant1 || 'boş'} / ${variant2 || 'boş'}. ${resultText} Bu çıktı reçete/geri ödeme kararı değildir. ${CLINICAL_NOTE_SAFETY_SENTENCE}`;
 }
 
 const styles = StyleSheet.create({

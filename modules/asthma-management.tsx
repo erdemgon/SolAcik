@@ -1,5 +1,9 @@
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  CLINICAL_NOTE_SAFETY_SENTENCE,
+  CopyClinicalNoteButton,
+} from '../components/common/CopyClinicalNoteButton';
 import { SourceVersionBadge } from '../components/common/SourceVersionBadge';
 import { WarningBox } from '../components/common/WarningBox';
 import {
@@ -130,6 +134,17 @@ export function AsthmaManagementScreen() {
   }, [ageGroup]);
   const stepCards = visibleSteps.filter((step) => step.step === selectedStep);
   const hasRedFlag = redFlagSelections.length > 0;
+  const clinicalNote = buildAsthmaClinicalNote({
+    acuteSelections,
+    afterSelections,
+    ageGroup,
+    controlResult,
+    redFlagSelections,
+    risks,
+    selectedStep,
+    symptoms,
+    stepCards,
+  });
 
   function toggle(list: string[], setter: (value: string[]) => void, item: string) {
     setter(list.includes(item) ? list.filter((value) => value !== item) : [...list, item]);
@@ -149,6 +164,7 @@ export function AsthmaManagementScreen() {
       </View>
 
       <SourceVersionBadge text={asthmaSourceBadge} />
+      <CopyClinicalNoteButton note={clinicalNote} />
 
       <View style={styles.tabs}>
         {tabs.map((tab) => (
@@ -425,6 +441,48 @@ function getControlResult(yesCount: number) {
   if (yesCount === 0) return 'İyi kontrollü';
   if (yesCount <= 2) return 'Kısmen kontrollü';
   return 'Kontrolsüz';
+}
+
+function buildAsthmaClinicalNote({
+  acuteSelections,
+  afterSelections,
+  ageGroup,
+  controlResult,
+  redFlagSelections,
+  risks,
+  selectedStep,
+  symptoms,
+  stepCards,
+}: {
+  acuteSelections: string[];
+  afterSelections: string[];
+  ageGroup: AsthmaAgeOption['value'];
+  controlResult: string;
+  redFlagSelections: string[];
+  risks: string[];
+  selectedStep: 1 | 2 | 3 | 4 | 5;
+  symptoms: string[];
+  stepCards: typeof gina2025AsthmaSteps;
+}) {
+  const ageLabel = ageOptions.find((option) => option.value === ageGroup)?.label ?? ageGroup;
+  const stepSummary = stepCards
+    .map((step) => `${step.ageGroup} basamak ${step.step}: ${step.preferredTitle}`)
+    .join('; ');
+
+  return [
+    `Astım yönetimi klinik notu: Yaş grubu ${ageLabel}.`,
+    `Semptom kontrol sonucu: ${controlResult} (${symptoms.length}/4 evet).`,
+    `Seçili basamak: ${selectedStep}${stepSummary ? `; ${stepSummary}` : ''}.`,
+    risks.length ? `İşaretli risk faktörleri: ${risks.join(', ')}.` : 'İşaretli risk faktörü yok.',
+    redFlagSelections.length
+      ? `Alevlenme kırmızı bayrakları: ${redFlagSelections.join(', ')}.`
+      : 'Alevlenme kırmızı bayrağı işaretlenmedi.',
+    acuteSelections.length ? `Acil değerlendirme seçilenleri: ${acuteSelections.join(', ')}.` : '',
+    afterSelections.length ? `Atak sonrası seçilenler: ${afterSelections.join(', ')}.` : '',
+    CLINICAL_NOTE_SAFETY_SENTENCE,
+  ]
+    .filter(Boolean)
+    .join(' ');
 }
 
 const styles = StyleSheet.create({

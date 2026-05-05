@@ -1,5 +1,9 @@
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  CLINICAL_NOTE_SAFETY_SENTENCE,
+  CopyClinicalNoteButton,
+} from '../components/common/CopyClinicalNoteButton';
 import { SourceVersionBadge } from '../components/common/SourceVersionBadge';
 import { WarningBox } from '../components/common/WarningBox';
 import {
@@ -42,6 +46,11 @@ export function BronchoscopyProcedureScreen() {
   const risk = useMemo(() => classifyBronchoscopyRisk(riskSignals), [riskSignals]);
   const pattern =
     balPatternCards.find((item) => item.key === selectedPattern) ?? balPatternCards[0];
+  const clinicalNote = buildBronchoscopyClinicalNote({
+    pattern,
+    risk,
+    riskSignals,
+  });
 
   function toggleRisk(key: BronchoscopyRiskKey) {
     setRiskSignals((current) =>
@@ -61,6 +70,7 @@ export function BronchoscopyProcedureScreen() {
       </View>
 
       <SourceVersionBadge text={bronchoscopySource.badge} />
+      <CopyClinicalNoteButton note={clinicalNote} />
 
       <View style={styles.tabs}>
         {tabs.map((tab) => (
@@ -275,6 +285,31 @@ function BulletList({ items }: { items: string[] }) {
       ))}
     </View>
   );
+}
+
+function buildBronchoscopyClinicalNote({
+  pattern,
+  risk,
+  riskSignals,
+}: {
+  pattern: (typeof balPatternCards)[number];
+  risk: ReturnType<typeof classifyBronchoscopyRisk>;
+  riskSignals: BronchoscopyRiskKey[];
+}) {
+  const selectedSignals = bronchoscopyRiskSignals
+    .filter((signal) => riskSignals.includes(signal.key))
+    .map((signal) => signal.label);
+
+  return [
+    'Bronkoskopi/BAL klinik notu:',
+    `İşlem riski: ${risk.title}; önerilen aksiyon: ${risk.action}.`,
+    selectedSignals.length
+      ? `İşaretli risk uyarıları: ${selectedSignals.join(', ')}.`
+      : 'İşaretli risk uyarısı yok.',
+    `Seçili BAL patern kartı: ${pattern.title}.`,
+    `Patern notu: ${pattern.caution}`,
+    CLINICAL_NOTE_SAFETY_SENTENCE,
+  ].join(' ');
 }
 
 const styles = StyleSheet.create({
