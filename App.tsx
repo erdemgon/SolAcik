@@ -36,6 +36,7 @@ import { BpdCalculatorScreen } from './modules/bpd-calculator';
 import { RespiratoryImmunizationScreen } from './modules/respiratory-immunization';
 import { ClinicalSourcePanel } from './components/common/ClinicalSourcePanel';
 import { getClinicalModuleMetadata } from './data/contentGovernance';
+import { appBuildInfo } from './data/appBuildInfo';
 
 const solAcikLogo = require('./assets/sol-acik-logo.png');
 
@@ -172,7 +173,7 @@ const categoryModules: Record<string, ModuleLink[]> = {
   categoryDiseases: [
     {
       title: 'Astım Yönetimi',
-      description: 'GINA 2025 temelli basamak, kontrol, rahatlatıcı ve alevlenme checklist’i.',
+      description: 'GINA 2026 temelli sade yaş, acil/stabil akış ve basamak checklist’i.',
       target: 'asthmaManagement',
       group: 'Astım',
       aliases: ['GINA', 'SMART', 'MART', 'AIR', 'SABA', 'ICS', 'İKS'],
@@ -1037,6 +1038,10 @@ function HomeScreen({ onOpen }: { onOpen: (screen: ScreenKey) => void }) {
           Pediatrik pulmonologlar ve çocuk göğüs hastalıkları yan dal asistanları
           için, yoğun klinik akışta okunabilir kısa kontrol ekranları.
         </Text>
+        <Text style={styles.buildInfoText}>
+          {appBuildInfo.buildLabel} · v{appBuildInfo.appVersion} · Build {appBuildInfo.buildDate} · İçerik güncelleme {appBuildInfo.contentLastUpdatedDate}
+        </Text>
+        <Text style={styles.latestChangeText}>{appBuildInfo.latestChange}</Text>
       </View>
 
       <View style={styles.searchPanel}>
@@ -1678,6 +1683,22 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
     marginTop: 10,
+    textAlign: 'center',
+  },
+  buildInfoText: {
+    color: MUTED,
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 16,
+    marginTop: 10,
+    textAlign: 'center',
+  },
+  latestChangeText: {
+    color: '#8a5a00',
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 16,
+    marginTop: 4,
     textAlign: 'center',
   },
   searchPanel: {

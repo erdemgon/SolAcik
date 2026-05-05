@@ -25,14 +25,14 @@ export const clinicalModuleMetadata: Record<string, ClinicalModuleMetadata> = {
   asthmaManagement: {
     moduleId: 'asthmaManagement',
     sourceTitle: 'Global Initiative for Asthma',
-    sourceVersion: 'GINA 2025 özet mantığı; GINA 2026 ile güncellenecek',
+    sourceVersion: 'GINA 2026 sade klinik akış taslağı; Türkiye KÜB/KT ve editör kurul doğrulaması gerekir',
     lastCheckedDate: LAST_CHECKED,
     clinicalEditor: DEFAULT_EDITOR,
     disclaimer: DEFAULT_DISCLAIMER,
   },
   asthmaBiologics: {
     moduleId: 'asthmaBiologics',
-    sourceTitle: 'GINA 2025 + ürün KÜB/KT biyolojik tedavi bilgileri',
+    sourceTitle: 'GINA 2026 + ürün KÜB/KT biyolojik tedavi bilgileri',
     sourceVersion: '2025/2026 yerel ürün doğrulaması gerekir',
     lastCheckedDate: LAST_CHECKED,
     clinicalEditor: DEFAULT_EDITOR,
