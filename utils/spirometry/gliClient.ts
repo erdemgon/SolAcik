@@ -13,12 +13,24 @@ export async function getGliSpirometryResult(
   if (engine === 'local_coefficients') return runGliLocalEngine(input);
 
   try {
-    return await fetchOfficialGliSpirometry({ ...input, engine: 'official_api' });
+    const officialResult = await fetchOfficialGliSpirometry({ ...input, engine: 'official_api' });
+    return {
+      ...officialResult,
+      engine: 'official_api',
+      validationStatus: officialResult.validationStatus ?? 'official_api',
+      validationMessage:
+        officialResult.validationMessage ??
+        'Sonuç server-side resmi GLI API/proxy yanıtından geldi; API anahtarı Expo uygulamasında tutulmaz.',
+    };
   } catch {
     const localResult = await runGliLocalEngine({ ...input, engine: 'local_coefficients' });
     return {
       ...localResult,
       engine: 'local_coefficients',
+      validationStatus: localResult.validationStatus ?? 'local_coefficients',
+      validationMessage:
+        localResult.validationMessage ??
+        'Yerel GLI katsayı motoru kullanıldı; resmi GLI örnekleriyle validasyon gereklidir.',
       warnings: [
         'Resmi GLI API backend endpoint’i bağlanamadı; yerel katsayı motoru kullanıldı.',
         ...localResult.warnings,
@@ -51,6 +63,8 @@ function buildOfficialApiUnavailableResult(input: GliSpirometryInput): GliSpirom
 
   return {
     engine: 'official_api',
+    validationStatus: 'unavailable',
+    validationMessage: 'Resmi GLI API ve yerel katsayı motoru kullanılamadığı için hesaplama yapılmadı.',
     source: '/api/gli/spiro',
     sourceVersion: 'official GLI REST API via server-side proxy',
     results,

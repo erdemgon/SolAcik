@@ -37,6 +37,11 @@ export async function runGliLocalEngine(
 
   return {
     engine: 'local_coefficients',
+    validationStatus: results.every((result) => result.predicted === null)
+      ? 'unavailable'
+      : 'local_coefficients',
+    validationMessage:
+      'Yerel GLI motoru henüz resmi GLI örnek çıktılarıyla çapraz doğrulanmış olarak işaretlenmedi; klinik kullanım öncesi validasyon gereklidir.',
     source: source.source,
     sourceVersion: `${source.package} ${source.version}; ${source.license}`,
     results,

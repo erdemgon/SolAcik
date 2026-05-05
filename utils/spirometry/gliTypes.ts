@@ -12,6 +12,8 @@ export type Sex = 'female' | 'male';
 
 export type GliEngine = 'official_api' | 'local_coefficients';
 
+export type GliValidationStatus = 'official_api' | 'local_coefficients' | 'unavailable';
+
 export type GliObservedValues = {
   fev1L?: number | null;
   fvcL?: number | null;
@@ -43,6 +45,8 @@ export type GliSpirometryParameterResult = {
 
 export type GliSpirometryResult = {
   engine: GliEngine;
+  validationStatus?: GliValidationStatus;
+  validationMessage?: string;
   source: string;
   sourceVersion?: string;
   results: GliSpirometryParameterResult[];

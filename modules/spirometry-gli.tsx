@@ -30,6 +30,12 @@ import {
   buildSpirometryInterpretation,
   SPIROMETRY_SAFETY_WARNING,
 } from '../utils/spirometry/gliInterpretation';
+import {
+  normalizeFev1FvcRatioInput,
+  parseSpirometryNumber,
+  validateSpirometryInputs,
+  type SpirometryInputValidation,
+} from '../utils/spirometry/spirometryInputValidation';
 import { calculateCdcGrowth } from '../utils/growth/cdcGrowth';
 import { cdcGrowthSource } from '../data/growth/cdcGrowthData';
 
@@ -72,10 +78,10 @@ export function SpirometryGliScreen() {
     fef25_75: '',
   });
 
-  const parsedAgeMonths = parseNumber(ageMonths);
-  const parsedHeightCm = parseNumber(heightCm);
-  const parsedWeightKg = parseNumber(weightKg);
-  const validation = validateInputs(parsedAgeMonths, parsedHeightCm);
+  const parsedAgeMonths = parseSpirometryNumber(ageMonths);
+  const parsedHeightCm = parseSpirometryNumber(heightCm);
+  const parsedWeightKg = parseSpirometryNumber(weightKg);
+  const validation = validateSpirometryInputs(parsedAgeMonths, parsedHeightCm);
   const ageYearsDecimal = parsedAgeMonths === null ? null : parsedAgeMonths / 12;
   const growthResults = useMemo(
     () =>
@@ -90,10 +96,10 @@ export function SpirometryGliScreen() {
   const canCalculate = validation.blocking.length === 0;
   const parsedObserved = useMemo(
     () => ({
-      fev1L: parseNumber(observed.fev1),
-      fvcL: parseNumber(observed.fvc),
-      fev1FvcRatio: normalizeRatioInput(observed.fev1Fvc),
-      fef2575Lps: parseNumber(observed.fef25_75),
+      fev1L: parseSpirometryNumber(observed.fev1),
+      fvcL: parseSpirometryNumber(observed.fvc),
+      fev1FvcRatio: normalizeFev1FvcRatioInput(observed.fev1Fvc),
+      fef2575Lps: parseSpirometryNumber(observed.fef25_75),
     }),
     [observed],
   );
@@ -233,7 +239,7 @@ export function SpirometryGliScreen() {
       ) : null}
 
       {activeTab === 'result' ? (
-        <SpirometryInlineResults
+          <SpirometryInlineResults
           canCalculate={canCalculate}
           gliResult={gliResult}
           isLoadingResult={isLoadingResult}
@@ -290,7 +296,7 @@ function SpirometryInlineResults({
   isLoadingResult: boolean;
   results: GliSpirometryResult['results'];
   summary: string;
-  validation: { blocking: string[]; amber: string[] };
+  validation: SpirometryInputValidation;
 }) {
   return (
     <View style={styles.inlineResultSection}>
@@ -307,6 +313,7 @@ function SpirometryInlineResults({
               text={gliResult?.warnings.join(' ') || 'Resmi GLI API endpoint’i veya katsayı motoru bağlanmadan predicted, LLN, z-skor veya % beklenen hesaplanmaz.'}
             />
           ) : null}
+          {gliResult ? <GliValidationStatusBox result={gliResult} /> : null}
           <View style={styles.cardList}>
             {results.map((result) => (
               <SpirometryResultCard key={result.parameter} result={result} />
@@ -328,7 +335,7 @@ function SpirometryInlineResults({
 function ValidationMessages({
   validation,
 }: {
-  validation: { blocking: string[]; amber: string[] };
+  validation: SpirometryInputValidation;
 }) {
   return (
     <>
@@ -362,44 +369,6 @@ function Chip({
       </Text>
     </Pressable>
   );
-}
-
-function parseNumber(value: string) {
-  if (!value.trim()) return null;
-  const parsed = Number(value.replace(',', '.'));
-  return Number.isFinite(parsed) ? parsed : null;
-}
-
-function normalizeRatioInput(value: string) {
-  const parsed = parseNumber(value);
-  if (parsed === null) return null;
-  return parsed > 1.5 ? parsed / 100 : parsed;
-}
-
-function validateInputs(ageMonths: number | null, heightCm: number | null) {
-  const blocking: string[] = [];
-  const amber: string[] = [];
-
-  if (ageMonths === null) blocking.push('Yaş ay olarak girilmelidir.');
-  else if (ageMonths < 36) {
-    blocking.push(
-      'GLI spirometri referansları 3 yaş altı için kullanılmamalıdır. Bu yaş grubunda rutin spirometri referansı yerine yaşa uygun alternatif testler ve uzman yorumu gerekir.',
-    );
-  } else if (ageMonths > 1140) {
-    blocking.push('GLI-2012 spirometri aralığı 3–95 yaş içindir. Yaş aralığı dışında hesaplama yapma.');
-  }
-
-  if (heightCm === null) blocking.push('GLI hesaplaması için boy gereklidir.');
-  else if (heightCm < 40 || heightCm > 230) {
-    blocking.push('Boy 40–230 cm dışında. Veri girişini kontrol edin; hesaplama yapılmaz.');
-  } else if (ageMonths !== null) {
-    const ageYears = ageMonths / 12;
-    if ((ageYears < 6 && heightCm > 135) || (ageYears > 12 && heightCm < 115)) {
-      amber.push('Boy değeri yaşa göre olağandışı görünüyor; veri girişini kontrol edin.');
-    }
-  }
-
-  return { blocking, amber };
 }
 
 function buildSummary({
@@ -439,6 +408,37 @@ function buildSummary({
       : '';
 
   return `${prefix}: ${sexLabel}, ${ageMonths || '—'} ay, boy ${heightCm || '—'} cm, referans ${referenceLabel}.${observedText} ${resultText}. Test kalitesi ve klinik bağlamla yorumlanmalıdır.`;
+}
+
+function GliValidationStatusBox({ result }: { result: GliSpirometryResult }) {
+  const status = result.validationStatus ?? (result.results.every((item) => item.predicted === null) ? 'unavailable' : result.engine);
+  const title =
+    status === 'official_api'
+      ? 'GLI motor durumu: resmi API'
+      : status === 'local_coefficients'
+        ? 'GLI motor durumu: yerel katsayı'
+        : 'GLI motor durumu: kullanılamıyor';
+  const text =
+    result.validationMessage ??
+    (status === 'official_api'
+      ? 'Sonuç resmi GLI backend/proxy yanıtından geldi.'
+      : status === 'local_coefficients'
+        ? 'Sonuç yerel katsayı motorundan geldi; resmi GLI örnekleriyle validasyon gereklidir.'
+        : 'Predicted, LLN, z-skor veya % beklenen hesaplanmadı.');
+
+  return (
+    <View style={[styles.statusPanel, status === 'official_api' ? styles.statusPanelOfficial : undefined]}>
+      <Text style={[styles.statusTitle, status === 'official_api' ? styles.statusTitleOfficial : undefined]}>
+        {title}
+      </Text>
+      <Text style={styles.statusText}>{text}</Text>
+      {status === 'local_coefficients' ? (
+        <Text style={styles.statusWarning}>
+          Validasyon gerekli: yerel GLI motoru resmi GLI hesaplayıcı örnekleriyle çapraz kontrol edilmeden klinik karar için tek başına kullanılmamalıdır.
+        </Text>
+      ) : null}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -546,5 +546,36 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     paddingTop: 2,
     textAlign: 'center',
+  },
+  statusPanel: {
+    backgroundColor: '#fff7e6',
+    borderColor: '#f0c36a',
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 5,
+    padding: 12,
+  },
+  statusPanelOfficial: {
+    backgroundColor: '#e8f5ed',
+    borderColor: '#b9e1c6',
+  },
+  statusTitle: {
+    color: '#8a5a00',
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  statusTitleOfficial: {
+    color: '#1d6b3a',
+  },
+  statusText: {
+    color: '#211f1f',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  statusWarning: {
+    color: '#8f1d2c',
+    fontSize: 13,
+    fontWeight: '800',
+    lineHeight: 18,
   },
 });
