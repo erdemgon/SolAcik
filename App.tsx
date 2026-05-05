@@ -30,6 +30,7 @@ import { BronchoscopyProcedureScreen } from './modules/bronchoscopy-procedure';
 import { HomeVentilationScreen } from './modules/home-ventilation';
 import { SystemicSteroidsScreen } from './modules/systemic-steroids';
 import { ImmunologyReferenceScreen } from './modules/immunology-reference';
+import { TracheostomyScreen } from './modules/tracheostomy';
 
 const solAcikLogo = require('./assets/sol-acik-logo.png');
 
@@ -273,8 +274,8 @@ const categoryModules: Record<string, ModuleLink[]> = {
   ],
   categoryTechnology: [
     {
-      title: 'Trakeostomi Acil Algoritması',
-      description: 'Acil durumda ekip içi ortak dil ve hızlı kontrol sırası.',
+      title: 'Trakeostomi',
+      description: 'Acil algoritma, acil set ve yaşa göre yaklaşık kanül boyutu hatırlatıcı.',
       target: 'trach',
       group: 'Trakeostomi',
     },
@@ -742,6 +743,8 @@ export default function App() {
           <PulmonaryHypertensionEmergencyScreen />
         ) : activeScreen === 'homeVentilation' ? (
           <HomeVentilationScreen />
+        ) : activeScreen === 'trach' ? (
+          <TracheostomyScreen />
         ) : activeScreen === 'cftrModulator' ? (
           <CftrModulatorScreen />
         ) : activeScreen === 'inhaledMedications' ? (
