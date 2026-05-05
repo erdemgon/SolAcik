@@ -955,6 +955,15 @@ function ConsentScreen({
           değildir.
         </Text>
 
+        <View style={styles.consentBuildBox}>
+          <Text style={styles.consentBuildText}>
+            {appBuildInfo.buildLabel} · v{appBuildInfo.appVersion} · Build {appBuildInfo.buildDate}
+          </Text>
+          <Text style={styles.consentBuildText}>
+            İçerik güncelleme {appBuildInfo.contentLastUpdatedDate}
+          </Text>
+        </View>
+
         <View style={styles.consentTextBlock}>
           <Text style={styles.consentBody}>
             Yerel protokoller, güncel resmi kılavuzlar, kurum uygulamaları ve
@@ -1038,10 +1047,15 @@ function HomeScreen({ onOpen }: { onOpen: (screen: ScreenKey) => void }) {
           Pediatrik pulmonologlar ve çocuk göğüs hastalıkları yan dal asistanları
           için, yoğun klinik akışta okunabilir kısa kontrol ekranları.
         </Text>
+      </View>
+
+      <View style={styles.buildInfoStrip}>
         <Text style={styles.buildInfoText}>
-          {appBuildInfo.buildLabel} · v{appBuildInfo.appVersion} · Build {appBuildInfo.buildDate} · İçerik güncelleme {appBuildInfo.contentLastUpdatedDate}
+          {appBuildInfo.buildLabel} · v{appBuildInfo.appVersion} · Build {appBuildInfo.buildDate}
         </Text>
-        <Text style={styles.latestChangeText}>{appBuildInfo.latestChange}</Text>
+        <Text style={styles.latestChangeText}>
+          İçerik güncelleme {appBuildInfo.contentLastUpdatedDate}: {appBuildInfo.latestChange}
+        </Text>
       </View>
 
       <View style={styles.searchPanel}>
@@ -1685,12 +1699,20 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: 'center',
   },
+  buildInfoStrip: {
+    backgroundColor: '#fff7e6',
+    borderColor: '#f0c36a',
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 3,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+  },
   buildInfoText: {
-    color: MUTED,
+    color: '#5d5658',
     fontSize: 11,
     fontWeight: '800',
     lineHeight: 16,
-    marginTop: 10,
     textAlign: 'center',
   },
   latestChangeText: {
