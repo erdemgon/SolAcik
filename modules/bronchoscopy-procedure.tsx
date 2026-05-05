@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import {
   CLINICAL_NOTE_SAFETY_SENTENCE,
   CopyClinicalNoteButton,
@@ -26,11 +26,12 @@ import {
   balReferenceSource,
 } from '../data/bronchoscopy/balReferenceValues';
 
-type TabKey = 'prep' | 'anesthesia' | 'bal' | 'normal' | 'patterns' | 'post' | 'source';
+type TabKey = 'prep' | 'anesthesia' | 'report' | 'bal' | 'normal' | 'patterns' | 'post' | 'source';
 
 const tabs: { key: TabKey; label: string }[] = [
   { key: 'prep', label: 'Hazırlık' },
   { key: 'anesthesia', label: 'Anestezi' },
+  { key: 'report', label: 'Rapor Taslağı' },
   { key: 'bal', label: 'BAL' },
   { key: 'normal', label: 'BAL Normal' },
   { key: 'patterns', label: 'Patern' },
@@ -38,10 +39,57 @@ const tabs: { key: TabKey; label: string }[] = [
   { key: 'source', label: 'Kaynak' },
 ];
 
+const indicationOptions = [
+  'Kronik ıslak öksürük / bronşektazi',
+  'Tekrarlayan lokalize pnömoni',
+  'Atelektazi',
+  'Yabancı cisim şüphesi',
+  'Stridor / havayolu anomalisi',
+  'Trakeostomi değerlendirmesi',
+  'İmmün baskıda örnekleme',
+  'Hemoptizi',
+];
+
+const routeOptions = ['Nazal', 'Oral', 'LMA üzerinden', 'ETT üzerinden', 'Trakeostomi kanülü üzerinden'];
+const anesthesiaOptions = ['Genel anestezi', 'Derin sedasyon', 'Sedasyon + topikal anestezi', 'Yoğun bakım koşullarında'];
+const findingOptions = ['Normal', 'Sekresyon', 'Ödem/eritem', 'Malazi', 'Darlık/stenoz', 'Dış bası', 'Granülasyon', 'Kanama', 'Mukus tıkacı', 'Yabancı cisim'];
+const balAppearanceOptions = ['Yapılmadı', 'Berrak', 'Mukoid', 'Bulanık', 'Pürülan', 'Hemorajik'];
+const impressionOptions = [
+  'Normal bronkoskopik görünüm',
+  'Trakeo/bronkomalazi lehine bulgular',
+  'Endobronşiyal inflamasyon',
+  'Mukus tıkacı / sekresyon yükü',
+  'Anatomik darlık veya dış bası',
+  'Trakeostomi ilişkili granülasyon',
+  'Aspirasyon/enfeksiyon açısından değerlendirme gerekir',
+];
+
+const airwayRegions = [
+  'Nazofarenks / üst havayolu',
+  'Larenks',
+  'Subglottik alan',
+  'Trakea',
+  'Karina',
+  'Sağ ana bronş ve lob bronşları',
+  'Sol ana bronş ve lob bronşları',
+];
+
 export function BronchoscopyProcedureScreen() {
   const [activeTab, setActiveTab] = useState<TabKey>('prep');
   const [riskSignals, setRiskSignals] = useState<BronchoscopyRiskKey[]>([]);
   const [selectedPattern, setSelectedPattern] = useState<BalPatternKey>('neutrophilic');
+  const [reportIndication, setReportIndication] = useState(indicationOptions[0]);
+  const [reportRoute, setReportRoute] = useState(routeOptions[0]);
+  const [reportAnesthesia, setReportAnesthesia] = useState(anesthesiaOptions[0]);
+  const [regionFindings, setRegionFindings] = useState<Record<string, string>>(() =>
+    Object.fromEntries(airwayRegions.map((region) => [region, 'Normal'])),
+  );
+  const [balSite, setBalSite] = useState('Sağ orta lob / lingula veya klinik hedef segment');
+  const [balVolume, setBalVolume] = useState('');
+  const [balReturned, setBalReturned] = useState('');
+  const [balAppearance, setBalAppearance] = useState(balAppearanceOptions[0]);
+  const [reportImpression, setReportImpression] = useState(impressionOptions[0]);
+  const [freeNote, setFreeNote] = useState('');
 
   const risk = useMemo(() => classifyBronchoscopyRisk(riskSignals), [riskSignals]);
   const pattern =
@@ -51,11 +99,27 @@ export function BronchoscopyProcedureScreen() {
     risk,
     riskSignals,
   });
+  const reportText = buildBronchoscopyReportText({
+    anesthesia: reportAnesthesia,
+    balAppearance,
+    balReturned,
+    balSite,
+    balVolume,
+    freeNote,
+    impression: reportImpression,
+    indication: reportIndication,
+    regionFindings,
+    route: reportRoute,
+  });
 
   function toggleRisk(key: BronchoscopyRiskKey) {
     setRiskSignals((current) =>
       current.includes(key) ? current.filter((item) => item !== key) : [...current, key],
     );
+  }
+
+  function updateRegionFinding(region: string, finding: string) {
+    setRegionFindings((current) => ({ ...current, [region]: finding }));
   }
 
   return (
@@ -115,6 +179,32 @@ export function BronchoscopyProcedureScreen() {
             text="Bronkoskop çapı, ETT/LMA iç çapı ve ventilasyon gereksinimi işlem öncesi netleşmelidir. Bronkoskop–ETT–LMA uyumluluk modülü bu plan için ayrıca kullanılabilir."
           />
         </>
+      ) : null}
+
+      {activeTab === 'report' ? (
+        <BronchoscopyReportBuilder
+          anesthesia={reportAnesthesia}
+          balAppearance={balAppearance}
+          balReturned={balReturned}
+          balSite={balSite}
+          balVolume={balVolume}
+          freeNote={freeNote}
+          impression={reportImpression}
+          indication={reportIndication}
+          regionFindings={regionFindings}
+          reportText={reportText}
+          route={reportRoute}
+          onAnesthesia={setReportAnesthesia}
+          onBalAppearance={setBalAppearance}
+          onBalReturned={setBalReturned}
+          onBalSite={setBalSite}
+          onBalVolume={setBalVolume}
+          onFreeNote={setFreeNote}
+          onImpression={setReportImpression}
+          onIndication={setReportIndication}
+          onRegionFinding={updateRegionFinding}
+          onRoute={setReportRoute}
+        />
       ) : null}
 
       {activeTab === 'bal' ? (
@@ -225,6 +315,161 @@ function ChecklistCard({ title, items }: { title: string; items: string[] }) {
   );
 }
 
+function BronchoscopyReportBuilder({
+  anesthesia,
+  balAppearance,
+  balReturned,
+  balSite,
+  balVolume,
+  freeNote,
+  impression,
+  indication,
+  regionFindings,
+  reportText,
+  route,
+  onAnesthesia,
+  onBalAppearance,
+  onBalReturned,
+  onBalSite,
+  onBalVolume,
+  onFreeNote,
+  onImpression,
+  onIndication,
+  onRegionFinding,
+  onRoute,
+}: {
+  anesthesia: string;
+  balAppearance: string;
+  balReturned: string;
+  balSite: string;
+  balVolume: string;
+  freeNote: string;
+  impression: string;
+  indication: string;
+  regionFindings: Record<string, string>;
+  reportText: string;
+  route: string;
+  onAnesthesia: (value: string) => void;
+  onBalAppearance: (value: string) => void;
+  onBalReturned: (value: string) => void;
+  onBalSite: (value: string) => void;
+  onBalVolume: (value: string) => void;
+  onFreeNote: (value: string) => void;
+  onImpression: (value: string) => void;
+  onIndication: (value: string) => void;
+  onRegionFinding: (region: string, finding: string) => void;
+  onRoute: (value: string) => void;
+}) {
+  return (
+    <>
+      <WarningBox
+        tone="amber"
+        title="Rapor taslağı"
+        text="Bu ekran resmi işlem raporunu otomatik tamamlamaz; işlemci hekim bronkoskopi bulgularını, görselleri ve kurum rapor formatını kontrol ederek düzenlemelidir. Hasta kimliği girilmemelidir."
+      />
+
+      <View style={styles.panel}>
+        <Text style={styles.panelTitle}>İşlem bilgisi</Text>
+        <OptionGroup title="Endikasyon" options={indicationOptions} selected={indication} onSelect={onIndication} />
+        <OptionGroup title="Giriş yolu" options={routeOptions} selected={route} onSelect={onRoute} />
+        <OptionGroup title="Anestezi/sedasyon" options={anesthesiaOptions} selected={anesthesia} onSelect={onAnesthesia} />
+      </View>
+
+      <View style={styles.panel}>
+        <Text style={styles.panelTitle}>Anatomik bulgular</Text>
+        {airwayRegions.map((region) => (
+          <View key={region} style={styles.regionBlock}>
+            <Text style={styles.cardLabel}>{region}</Text>
+            <View style={styles.chipWrap}>
+              {findingOptions.map((finding) => (
+                <Chip
+                  key={`${region}-${finding}`}
+                  label={finding}
+                  selected={regionFindings[region] === finding}
+                  onPress={() => onRegionFinding(region, finding)}
+                />
+              ))}
+            </View>
+          </View>
+        ))}
+      </View>
+
+      <View style={styles.panel}>
+        <Text style={styles.panelTitle}>BAL / örnekleme</Text>
+        <Text style={styles.inputLabel}>BAL lokalizasyonu</Text>
+        <TextInput style={styles.input} value={balSite} onChangeText={onBalSite} />
+        <View style={styles.inputRow}>
+          <View style={styles.inputHalf}>
+            <Text style={styles.inputLabel}>Verilen hacim</Text>
+            <TextInput
+              keyboardType="decimal-pad"
+              placeholder="örn. 20 mL"
+              placeholderTextColor="#8a8a8a"
+              style={styles.input}
+              value={balVolume}
+              onChangeText={onBalVolume}
+            />
+          </View>
+          <View style={styles.inputHalf}>
+            <Text style={styles.inputLabel}>Geri alınan hacim</Text>
+            <TextInput
+              keyboardType="decimal-pad"
+              placeholder="örn. 8 mL"
+              placeholderTextColor="#8a8a8a"
+              style={styles.input}
+              value={balReturned}
+              onChangeText={onBalReturned}
+            />
+          </View>
+        </View>
+        <OptionGroup title="BAL görünümü" options={balAppearanceOptions} selected={balAppearance} onSelect={onBalAppearance} />
+      </View>
+
+      <View style={styles.panel}>
+        <Text style={styles.panelTitle}>İzlenim ve serbest not</Text>
+        <OptionGroup title="Ön izlenim" options={impressionOptions} selected={impression} onSelect={onImpression} />
+        <Text style={styles.inputLabel}>Ek not, kimlik bilgisi yazma</Text>
+        <TextInput
+          multiline
+          numberOfLines={4}
+          style={[styles.input, styles.multilineInput]}
+          value={freeNote}
+          onChangeText={onFreeNote}
+        />
+      </View>
+
+      <View style={styles.panel}>
+        <Text style={styles.panelTitle}>Oluşturulan rapor metni</Text>
+        <Text style={styles.reportPreview}>{reportText}</Text>
+        <CopyClinicalNoteButton label="Rapor taslağını kopyala" note={reportText} />
+      </View>
+    </>
+  );
+}
+
+function OptionGroup({
+  title,
+  options,
+  selected,
+  onSelect,
+}: {
+  title: string;
+  options: string[];
+  selected: string;
+  onSelect: (value: string) => void;
+}) {
+  return (
+    <View style={styles.optionGroup}>
+      <Text style={styles.cardLabel}>{title}</Text>
+      <View style={styles.chipWrap}>
+        {options.map((option) => (
+          <Chip key={option} label={option} selected={selected === option} onPress={() => onSelect(option)} />
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function Toggle({
   label,
   note,
@@ -312,6 +557,50 @@ function buildBronchoscopyClinicalNote({
   ].join(' ');
 }
 
+function buildBronchoscopyReportText({
+  anesthesia,
+  balAppearance,
+  balReturned,
+  balSite,
+  balVolume,
+  freeNote,
+  impression,
+  indication,
+  regionFindings,
+  route,
+}: {
+  anesthesia: string;
+  balAppearance: string;
+  balReturned: string;
+  balSite: string;
+  balVolume: string;
+  freeNote: string;
+  impression: string;
+  indication: string;
+  regionFindings: Record<string, string>;
+  route: string;
+}) {
+  const findings = airwayRegions
+    .map((region) => `${region}: ${regionFindings[region] ?? 'değerlendirildi'}`)
+    .join('; ');
+  const balText =
+    balAppearance === 'Yapılmadı'
+      ? 'BAL yapılmadı.'
+      : `BAL ${balSite} lokalizasyonundan yapıldı. Verilen hacim: ${balVolume || 'belirtilmedi'}; geri alınan hacim: ${balReturned || 'belirtilmedi'}; görünüm: ${balAppearance}. Örnekler kurum protokolüne göre mikrobiyoloji, hücre sayımı/diferansiyel ve gerekli ek testlere gönderilmek üzere ayrıldı.`;
+  const extra = freeNote.trim() ? ` Ek not: ${freeNote.trim()}.` : '';
+
+  return [
+    'Pediatrik fleksibl bronkoskopi rapor taslağı.',
+    `Endikasyon: ${indication}.`,
+    `Teknik: İşlem ${anesthesia} altında, ${route} yapıldı.`,
+    `Bronkoskopik bulgular: ${findings}.`,
+    balText,
+    `Ön izlenim: ${impression}.`,
+    extra,
+    'Bu metin eğitim/checklist amaçlı rapor taslağıdır; işlemci hekim tarafından bronkoskopi görüntüleri, kurum rapor formatı ve klinik bağlamla doğrulanmadan resmi rapor olarak kullanılmamalıdır.',
+  ].join(' ');
+}
+
 const styles = StyleSheet.create({
   scrollContent: { gap: 14, paddingBottom: 32 },
   intro: { gap: 8 },
@@ -342,6 +631,14 @@ const styles = StyleSheet.create({
   toggleLabel: { color: '#211f1f', fontSize: 15, fontWeight: '900', lineHeight: 20 },
   toggleNote: { color: '#686868', fontSize: 13, lineHeight: 18 },
   cardLabel: { color: '#8f1d2c', fontSize: 12, fontWeight: '900', textTransform: 'uppercase' },
+  optionGroup: { gap: 8 },
+  regionBlock: { backgroundColor: '#ffffff', borderColor: '#e1e1e4', borderRadius: 8, borderWidth: 1, gap: 9, padding: 11 },
+  inputLabel: { color: '#686868', fontSize: 12, fontWeight: '900', textTransform: 'uppercase' },
+  input: { backgroundColor: '#ffffff', borderColor: '#d9d9dd', borderRadius: 8, borderWidth: 1, color: '#211f1f', fontSize: 15, minHeight: 44, paddingHorizontal: 11, paddingVertical: 9 },
+  inputRow: { flexDirection: 'row', gap: 10 },
+  inputHalf: { flex: 1, gap: 6 },
+  multilineInput: { minHeight: 86, textAlignVertical: 'top' },
+  reportPreview: { backgroundColor: '#ffffff', borderColor: '#e1e1e4', borderRadius: 8, borderWidth: 1, color: '#343131', fontSize: 14, lineHeight: 21, padding: 12 },
   bulletList: { gap: 8 },
   bulletRow: { flexDirection: 'row', gap: 8 },
   bullet: { color: '#8f1d2c', fontSize: 16, fontWeight: '900', width: 12 },
