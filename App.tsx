@@ -61,6 +61,7 @@ type ScreenKey =
   | 'categoryTechnology'
   | 'categoryReferences'
   | 'categoryMedications'
+  | 'categoryAcademic'
   | 'pibo'
   | 'cf'
   | 'trach'
@@ -120,6 +121,7 @@ type ModuleLink = {
   target?: ScreenKey;
   status?: string;
   group?: string;
+  aliases?: string[];
 };
 
 type SearchIndexItem = ModuleLink & {
@@ -136,28 +138,33 @@ const CARD = '#f5f5f6';
 const homeCategories: HomeCategory[] = [
   {
     key: 'categoryDiseases',
-    title: 'Çocuk Solunum Yolu Hastalıkları',
-    description: 'Astım, kistik fibrozis, tüberküloz, bronşiolit, pnömoni ve diğer hastalık modülleri.',
-  },
-  {
-    key: 'categoryProcedures',
-    title: 'Girişimsel İşlemler',
-    description: 'Bronkoskopi, silya biyopsisi ve girişimsel bronkoskopi araçları.',
+    title: 'Poliklinik',
+    description: 'Poliklinikte en sık açılan hastalık yönetimi, izlem ve karar ağacı modülleri.',
   },
   {
     key: 'categoryTechnology',
-    title: 'Solunum Teknolojileri',
-    description: 'Trakeostomi, ev ventilatörü ve solunum destek teknolojileri.',
+    title: 'Acil / Servis',
+    description: 'Acil yaklaşım, servis izlemi, trakeostomi ve solunum desteği modülleri.',
+  },
+  {
+    key: 'categoryProcedures',
+    title: 'İşlem',
+    description: 'Bronkoskopi, BAL, trakeostomi ve girişimsel işlem hazırlık araçları.',
+  },
+  {
+    key: 'categoryMedications',
+    title: 'İlaç / Doz',
+    description: 'İnhalerler, sistemik steroidler, biyolojikler, aşılar ve monoklonal antikorlar.',
   },
   {
     key: 'categoryReferences',
     title: 'Normal Değerler',
-    description: 'İmmünolojik değerler, BAL hücre popülasyonları ve spirometri referansları.',
+    description: 'Spirometri, BAL, immünoloji ve büyüme referanslarına hızlı erişim.',
   },
   {
-    key: 'categoryMedications',
-    title: 'İlaçlar, Aşılar ve Dozlar',
-    description: 'İnhaler ilaçlar, sistemik steroidler, aşılar, monoklonal antikorlar ve sık kullanılan doz araçları.',
+    key: 'categoryAcademic',
+    title: 'Akademik / Registry',
+    description: 'Nadir hastalıklar, kayıt/izlem notları, kaynaklar ve akademik referans başlıkları.',
   },
 ];
 
@@ -168,102 +175,119 @@ const categoryModules: Record<string, ModuleLink[]> = {
       description: 'GINA 2025 temelli basamak, kontrol, rahatlatıcı ve alevlenme checklist’i.',
       target: 'asthmaManagement',
       group: 'Astım',
+      aliases: ['GINA', 'SMART', 'MART', 'AIR', 'SABA', 'ICS', 'İKS'],
     },
     {
       title: 'Astım Biyolojik Tedaviler',
       description: 'Ağır astımda biyolojik ilaç seçici, karar ağacı ve doz kartları.',
       target: 'asthmaBiologics',
       group: 'Astım',
+      aliases: ['omalizumab', 'mepolizumab', 'dupilumab', 'benralizumab', 'IgE', 'eozinofil'],
     },
     {
       title: 'Kistik Fibrozis Yıllık İzlem Checklist’i',
       description: 'Yıllık değerlendirmede atlanmaması gereken başlıklar.',
       target: 'cf',
       group: 'Kistik Fibrozis',
+      aliases: ['KF', 'CF', 'cystic fibrosis'],
     },
     {
       title: 'CFTR Modülatör',
       description: 'Trikafta/Kaftrio ve Alyftrek için yaş-varyant ön uygunluk kontrolü.',
       target: 'cftrModulator',
       group: 'Kistik Fibrozis',
+      aliases: ['KF', 'CF', 'CFTR', 'Trikafta', 'Kaftrio', 'Alyftrek', 'mutasyon', 'variant', 'varyant'],
     },
     {
       title: 'Öksürüğe Yaklaşım',
       description: 'Kronik öksürükte spesifik ipuçları, ıslak/kuru öksürük ve karar ağacı.',
       target: 'chronicCough',
       group: 'Kronik Öksürük ve Hava Yolu',
+      aliases: ['öksürük', 'cough', 'kronik oksuruk'],
     },
     {
       title: 'Non-CF Bronşektazi',
       description: 'Kronik ıslak öksürük, BT tanısı, etiyoloji ve alevlenme karar ağacı.',
       target: 'nonCfBronchiectasis',
       group: 'Kronik Öksürük ve Hava Yolu',
+      aliases: ['bronşektazi', 'bronchiectasis', 'non CF', 'non-KF'],
     },
     {
       title: 'Primer Siliyer Diskinezi',
       description: 'PCD şüphesi, tanısal test seçimi, sonuç yorumu ve izlem checklist’i.',
       target: 'primaryCiliaryDyskinesia',
       group: 'Kronik Öksürük ve Hava Yolu',
+      aliases: ['PCD', 'PSD', 'primer siliyer diskinezi', 'silya'],
     },
     {
       title: 'Çocuk TB',
       description: 'Çocukluk çağı tüberkülozu tanı, TBE ve tedavi doz hatırlatıcıları.',
       target: 'childhoodTb',
       group: 'Enfeksiyonlar',
+      aliases: ['TB', 'TBC', 'TBE', 'tüberküloz', 'tuberkuloz'],
     },
     {
       title: 'Bronşiolit',
       description: 'Akut bronşiolit değerlendirme ve izlem checklist’i.',
       target: 'bronchiolitis',
       group: 'Enfeksiyonlar',
+      aliases: ['bronşiolit', 'bronsiolit', 'RSV'],
     },
     {
       title: 'Bronkopulmoner Displazi',
       description: 'Türk Neonatoloji Derneği temelli BPD şiddet sınıflaması ve izlem checklist’i.',
       target: 'bpdCalculator',
       group: 'Neonatal Solunum',
+      aliases: ['BPD', 'bronkopulmoner displazi', 'prematüre', 'prematurite'],
     },
     {
       title: 'Pnömoni',
       description: 'Toplumda gelişen ve immün baskılanmış çocukta pnömoni algoritması.',
       target: 'pediatricPneumonia',
       group: 'Enfeksiyonlar',
+      aliases: ['pnömoni', 'pnomoni', 'CAP', 'zatürre', 'zaturre'],
     },
     {
       title: 'Parapnömonik Efüzyon',
       description: 'Efüzyon değerlendirme, Light kriterleri ve drenaj karar uyarıları.',
       target: 'parapneumonicEffusion',
       group: 'Enfeksiyonlar',
+      aliases: ['efüzyon', 'efuzyon', 'ampiyem', 'Light', 'plevra'],
     },
     {
       title: 'Çocukluk Çağı İnterstisyel Akciğer Hastalıkları',
       description: 'ChILD şüphesi, dışlama listesi, patern ve uzman merkez karar ağacı.',
       target: 'childInterstitial',
       group: 'Nadir / Kompleks Hastalıklar',
+      aliases: ['chILD', 'ILD', 'interstisyel', 'interstitial'],
     },
     {
       title: 'OSAS ve Uyku',
       description: 'Horlama, PSG gereksinimi, CPAP/NIV yolu ve persistan OSAS karar ağacı.',
       target: 'pediatricOsasSleep',
       group: 'Uyku ve Solunum Kontrolü',
+      aliases: ['OSAS', 'OUAS', 'uyku', 'PSG', 'CPAP', 'NIV', 'BiPAP'],
     },
     {
       title: 'Hemoptizi Acil',
       description: 'Hava yolu tehdidi, ilk 5 dakika, neden ve kanama kontrol karar ağacı.',
       target: 'hemoptysisEmergency',
       group: 'Acil Yaklaşım',
+      aliases: ['hemoptizi', 'kanama', 'acil'],
     },
     {
       title: 'Pulmoner Hipertansiyon Acil',
       description: 'PH krizi, prostasiklin kesintisi, tetikleyici düzeltme ve yoğun bakım koordinasyonu.',
       target: 'pulmonaryHypertensionEmergency',
       group: 'Acil Yaklaşım',
+      aliases: ['PH', 'PAH', 'pulmoner hipertansiyon', 'acil'],
     },
     {
       title: 'PIBO Takip Checklist’i',
       description: 'Post-infeksiyöz bronşiolitis obliterans izlemi.',
       target: 'pibo',
       group: 'Nadir / Kompleks Hastalıklar',
+      aliases: ['PIBO', 'BO', 'bronşiolitis obliterans', 'bronchiolitis obliterans'],
     },
   ],
   categoryProcedures: [
@@ -272,38 +296,86 @@ const categoryModules: Record<string, ModuleLink[]> = {
       description: 'Hazırlık, anestezi, BAL istemleri, normal hücre değerleri ve patern yorumları.',
       target: 'bronchoscopyProcedure',
       group: 'Bronkoskopi',
+      aliases: ['BAL', 'bronkoskopi', 'bronchoscopy', 'lavaj'],
     },
     {
       title: 'Bronkoskop Uyumluluk',
       description: 'Fleksibl bronkoskop, ETT ve LMA uyumluluğu için hızlı eğitim tablosu.',
       target: 'bronchoscopeCompat',
       group: 'Bronkoskopi',
+      aliases: ['bronkoskop', 'ETT', 'LMA', 'airway'],
     },
     {
       title: 'Silya Biyopsisi Alma',
       description: 'Örnek alma, taşıma ve kalite notları için modül alanı.',
       status: 'Planlandı',
       group: 'Örnek Alma',
+      aliases: ['silya', 'PCD', 'PSD', 'biyopsi'],
     },
     {
       title: 'Girişimsel Bronkoskopi',
       description: 'Girişimsel bronkoskopi hazırlık ve güvenlik checklist’i.',
       status: 'Planlandı',
       group: 'Bronkoskopi',
+      aliases: ['bronkoskopi', 'interventional'],
     },
   ],
   categoryTechnology: [
     {
+      title: 'Bronşiolit',
+      description: 'Akut bronşiolit değerlendirme ve izlem checklist’i.',
+      target: 'bronchiolitis',
+      group: 'Acil / Servis Enfeksiyon',
+      aliases: ['bronşiolit', 'bronsiolit', 'RSV', 'servis'],
+    },
+    {
+      title: 'Pnömoni',
+      description: 'Toplumda gelişen ve immün baskılanmış çocukta pnömoni algoritması.',
+      target: 'pediatricPneumonia',
+      group: 'Acil / Servis Enfeksiyon',
+      aliases: ['pnömoni', 'pnomoni', 'CAP', 'zatürre', 'zaturre', 'servis'],
+    },
+    {
+      title: 'Parapnömonik Efüzyon',
+      description: 'Efüzyon değerlendirme, Light kriterleri ve drenaj karar uyarıları.',
+      target: 'parapneumonicEffusion',
+      group: 'Acil / Servis Enfeksiyon',
+      aliases: ['efüzyon', 'efuzyon', 'ampiyem', 'Light', 'plevra', 'servis'],
+    },
+    {
+      title: 'Hemoptizi Acil',
+      description: 'Hava yolu tehdidi, ilk 5 dakika, neden ve kanama kontrol karar ağacı.',
+      target: 'hemoptysisEmergency',
+      group: 'Acil Yaklaşım',
+      aliases: ['hemoptizi', 'kanama', 'acil'],
+    },
+    {
+      title: 'Pulmoner Hipertansiyon Acil',
+      description: 'PH krizi, prostasiklin kesintisi, tetikleyici düzeltme ve yoğun bakım koordinasyonu.',
+      target: 'pulmonaryHypertensionEmergency',
+      group: 'Acil Yaklaşım',
+      aliases: ['PH', 'PAH', 'pulmoner hipertansiyon', 'acil'],
+    },
+    {
       title: 'Trakeostomi',
       description: 'Acil algoritma, acil set ve yaşa göre yaklaşık kanül boyutu hatırlatıcı.',
       target: 'trach',
-      group: 'Trakeostomi',
+      group: 'Solunum Teknolojileri',
+      aliases: ['trakeostomi', 'trach', 'kanül', 'kanul', 'acil'],
     },
     {
       title: 'Ev Ventilatörü',
       description: 'Ev tipi ventilatör izlem ve alarm değerlendirme araçları.',
       target: 'homeVentilation',
-      group: 'Ev Solunum Desteği',
+      group: 'Solunum Teknolojileri',
+      aliases: ['NIV', 'BiPAP', 'ventilatör', 'ventilator', 'ev ventilasyonu'],
+    },
+    {
+      title: 'Bronkopulmoner Displazi',
+      description: 'Türk Neonatoloji Derneği temelli BPD şiddet sınıflaması ve izlem checklist’i.',
+      target: 'bpdCalculator',
+      group: 'Servis / Neonatal Solunum',
+      aliases: ['BPD', 'bronkopulmoner displazi', 'prematüre', 'prematurite', 'servis'],
     },
   ],
   categoryReferences: [
@@ -312,18 +384,21 @@ const categoryModules: Record<string, ModuleLink[]> = {
       description: 'Türkiye çocuk verisiyle yaşa göre IgG, IgA, IgM ve IgG alt grup referansları.',
       target: 'immunologyReference',
       group: 'İmmünoloji',
+      aliases: ['IgG', 'IgA', 'IgM', 'IgG4', 'CD3', 'CD4', 'CD8', 'immünoloji', 'immunoloji'],
     },
     {
       title: 'BAL Hücre Popülasyon Değerleri',
       description: 'Yüklenen çocuk BAL normal hücre ve lenfosit alt popülasyon değerleri.',
       target: 'balReference',
       group: 'Bronkoskopi / BAL',
+      aliases: ['BAL', 'CD4', 'CD8', 'lenfosit', 'makrofaj', 'nötrofil'],
     },
     {
       title: 'Spirometri GLI',
       description: 'Çocuklarda yaş, cinsiyet ve boya göre normal değer ve z-skor hesaplayıcı.',
       target: 'spirometryGli',
       group: 'Solunum Fonksiyon',
+      aliases: ['GLI', 'FEV1', 'FVC', 'FEV1/FVC', 'MEF25-75', 'spirometri', 'z skor'],
     },
   ],
   categoryMedications: [
@@ -332,49 +407,108 @@ const categoryModules: Record<string, ModuleLink[]> = {
       description: 'Yaşa göre inhaler, nebül ve kuru toz seçici.',
       target: 'inhaledMedications',
       group: 'İlaçlar',
+      aliases: ['inhaler', 'nebül', 'nebülizatör', 'SMART', 'MART', 'SABA', 'İKS', 'ICS'],
     },
     {
       title: 'Sistemik Steroidler',
       description: 'Glukokortikoid eşdeğerleri ve pediatrik solunum kısa kür doz hatırlatıcıları.',
       target: 'systemicSteroids',
       group: 'İlaçlar',
+      aliases: ['steroid', 'prednol', 'prednizolon', 'deksametazon', 'metilprednizolon'],
     },
     {
       title: 'Aşılar ve Monoklonal Antikorlar',
       description: 'Pnömokok, RSV monoklonal antikor ve influenza doz/aralık hatırlatıcısı.',
       target: 'respiratoryImmunization',
       group: 'İlaçlar',
+      aliases: ['aşı', 'asi', 'RSV', 'nirsevimab', 'palivizumab', 'PCV20', 'PPSV23', 'grip', 'influenza'],
     },
     {
       title: 'İnhaler Cihaz Eğitim Kartları',
       description: 'Hasta ve aile eğitiminde hızlı cihaz tekniği kontrolü.',
       target: 'inhaler',
       group: 'Cihazlar',
+      aliases: ['inhaler', 'spacer', 'hazne', 'DPI', 'MDI', 'ÖDİ'],
     },
     {
       title: 'Kaynaklar ve Yasal Uyarı',
       description: 'Açık kaynak, eğitim amacı ve kullanım sınırları.',
       target: 'resources',
       group: 'Sık Kullanılanlar',
+      aliases: ['kaynak', 'uyarı', 'disclaimer', 'lisans'],
     },
     {
       title: 'Notlarım',
       description: 'Kişisel hatırlatmalar ve kurum içi kısa notlar.',
       target: 'notes',
       group: 'Sık Kullanılanlar',
+      aliases: ['not', 'notlar', 'hatırlatma'],
+    },
+  ],
+  categoryAcademic: [
+    {
+      title: 'Çocukluk Çağı İnterstisyel Akciğer Hastalıkları',
+      description: 'ChILD şüphesi, dışlama listesi, patern ve uzman merkez karar ağacı.',
+      target: 'childInterstitial',
+      group: 'Nadir Hastalıklar',
+      aliases: ['chILD', 'ILD', 'interstisyel', 'interstitial', 'registry'],
+    },
+    {
+      title: 'PIBO Takip Checklist’i',
+      description: 'Post-infeksiyöz bronşiolitis obliterans izlemi.',
+      target: 'pibo',
+      group: 'Nadir Hastalıklar',
+      aliases: ['PIBO', 'BO', 'bronşiolitis obliterans', 'bronchiolitis obliterans', 'registry'],
+    },
+    {
+      title: 'Kistik Fibrozis Yıllık İzlem Checklist’i',
+      description: 'Yıllık değerlendirmede atlanmaması gereken başlıklar.',
+      target: 'cf',
+      group: 'Registry / İzlem',
+      aliases: ['KF', 'CF', 'cystic fibrosis', 'registry'],
+    },
+    {
+      title: 'Primer Siliyer Diskinezi',
+      description: 'PCD şüphesi, tanısal test seçimi, sonuç yorumu ve izlem checklist’i.',
+      target: 'primaryCiliaryDyskinesia',
+      group: 'Registry / İzlem',
+      aliases: ['PCD', 'PSD', 'primer siliyer diskinezi', 'silya', 'registry'],
+    },
+    {
+      title: 'Kaynaklar ve Yasal Uyarı',
+      description: 'Açık kaynak, eğitim amacı ve kullanım sınırları.',
+      target: 'resources',
+      group: 'Akademik Notlar',
+      aliases: ['kaynak', 'uyarı', 'disclaimer', 'lisans'],
+    },
+    {
+      title: 'Notlarım',
+      description: 'Kişisel hatırlatmalar ve kurum içi kısa notlar.',
+      target: 'notes',
+      group: 'Akademik Notlar',
+      aliases: ['not', 'notlar', 'hatırlatma'],
     },
   ],
 };
 
-const moduleSearchIndex: SearchIndexItem[] = homeCategories.flatMap((category) =>
+const moduleSearchIndex: SearchIndexItem[] = uniqueSearchItems(homeCategories.flatMap((category) =>
   (categoryModules[category.key] ?? []).map((module) => ({
     ...module,
     categoryTitle: category.title,
     searchText: normalizeSearchText(
-      `${category.title} ${module.title} ${module.description} ${module.status ?? ''}`,
+      `${category.title} ${module.group ?? ''} ${module.title} ${module.description} ${module.status ?? ''} ${(module.aliases ?? []).join(' ')}`,
     ),
-  })),
-);
+  }))));
+
+function uniqueSearchItems(items: SearchIndexItem[]) {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    const key = item.target ?? item.title;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
 
 function normalizeSearchText(value: string) {
   return value
@@ -871,6 +1005,7 @@ function ConsentScreen({
 
 function HomeScreen({ onOpen }: { onOpen: (screen: ScreenKey) => void }) {
   const [query, setQuery] = useState('');
+  const [selectedMode, setSelectedMode] = useState<ScreenKey>('categoryDiseases');
   const normalizedQuery = normalizeSearchText(query.trim());
   const searchResults = useMemo(() => {
     if (!normalizedQuery) {
@@ -882,6 +1017,8 @@ function HomeScreen({ onOpen }: { onOpen: (screen: ScreenKey) => void }) {
       .slice(0, 12);
   }, [normalizedQuery]);
   const isSearching = normalizedQuery.length > 0;
+  const selectedModeInfo = homeCategories.find((category) => category.key === selectedMode);
+  const selectedModeGroups = groupModules(categoryModules[selectedMode] ?? []);
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -909,7 +1046,7 @@ function HomeScreen({ onOpen }: { onOpen: (screen: ScreenKey) => void }) {
           autoCorrect={false}
           clearButtonMode="while-editing"
           onChangeText={setQuery}
-          placeholder="Örn. BAL, PCD, hemoptizi, inhaler..."
+          placeholder="Örn. KF, PCD, BAL, GLI, OSAS, RSV, NIV..."
           placeholderTextColor="#8a8a8a"
           style={styles.searchInput}
           value={query}
@@ -934,25 +1071,48 @@ function HomeScreen({ onOpen }: { onOpen: (screen: ScreenKey) => void }) {
         ) : null}
       </View>
 
-      <View style={styles.grid}>
-        {homeCategories.map((category) => (
-          <Pressable
-            accessibilityRole="button"
-            key={category.key}
-            onPress={() => onOpen(category.key)}
-            style={({ pressed }) => [
-              styles.card,
-              styles.categoryCard,
-              pressed ? styles.cardPressed : undefined,
-            ]}
-          >
-            <Text style={styles.categoryBadge}>
-              {categoryModules[category.key]?.length ?? 0} modül
-            </Text>
-            <Text style={styles.cardTitle}>{category.title}</Text>
-            <Text style={styles.cardDescription}>{category.description}</Text>
-            <Text style={styles.cardAction}>Kategoriye gir</Text>
-          </Pressable>
+      <View style={styles.modePanel}>
+        <Text style={styles.searchLabel}>Pratik mod</Text>
+        <View style={styles.modeChips}>
+          {homeCategories.map((category) => (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ selected: selectedMode === category.key }}
+              key={category.key}
+              onPress={() => setSelectedMode(category.key)}
+              style={({ pressed }) => [
+                styles.modeChip,
+                selectedMode === category.key ? styles.modeChipSelected : undefined,
+                pressed ? styles.cardPressed : undefined,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.modeChipText,
+                  selectedMode === category.key ? styles.modeChipTextSelected : undefined,
+                ]}
+              >
+                {category.title}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+        <Text style={styles.modeDescription}>{selectedModeInfo?.description}</Text>
+      </View>
+
+      <View style={styles.groupStack}>
+        {selectedModeGroups.map((group) => (
+          <View key={group.title} style={styles.moduleGroup}>
+            <View style={styles.moduleGroupHeader}>
+              <Text style={styles.moduleGroupTitle}>{group.title}</Text>
+              <Text style={styles.moduleGroupCount}>{group.modules.length}</Text>
+            </View>
+            <View style={styles.grid}>
+              {group.modules.map((module) => (
+                <ModuleListCard key={`${selectedMode}-${module.title}`} module={module} onOpen={onOpen} />
+              ))}
+            </View>
+          </View>
         ))}
       </View>
     </ScrollView>
@@ -1568,6 +1728,45 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   noResultsText: {
+    color: MUTED,
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  modePanel: {
+    backgroundColor: '#fff',
+    borderColor: '#eeeeef',
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 10,
+    padding: 14,
+  },
+  modeChips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  modeChip: {
+    backgroundColor: CARD,
+    borderColor: '#dfdfe3',
+    borderRadius: 999,
+    borderWidth: 1,
+    minHeight: 40,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+  },
+  modeChipSelected: {
+    backgroundColor: ACCENT,
+    borderColor: ACCENT,
+  },
+  modeChipText: {
+    color: TEXT,
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  modeChipTextSelected: {
+    color: '#fff',
+  },
+  modeDescription: {
     color: MUTED,
     fontSize: 14,
     lineHeight: 20,
