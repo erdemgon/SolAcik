@@ -31,6 +31,7 @@ import { HomeVentilationScreen } from './modules/home-ventilation';
 import { SystemicSteroidsScreen } from './modules/systemic-steroids';
 import { ImmunologyReferenceScreen } from './modules/immunology-reference';
 import { TracheostomyScreen } from './modules/tracheostomy';
+import { BalReferenceScreen } from './modules/bal-reference';
 
 const solAcikLogo = require('./assets/sol-acik-logo.png');
 
@@ -65,6 +66,7 @@ type ScreenKey =
   | 'systemicSteroids'
   | 'spirometryGli'
   | 'immunologyReference'
+  | 'balReference'
   | 'inhaler'
   | 'notes'
   | 'resources';
@@ -313,8 +315,8 @@ const categoryModules: Record<string, ModuleLink[]> = {
     },
     {
       title: 'BAL Hücre Popülasyon Değerleri',
-      description: 'BAL sitoloji referans ve yorumlama notları.',
-      status: 'Planlandı',
+      description: 'Yüklenen çocuk BAL normal hücre ve lenfosit alt popülasyon değerleri.',
+      target: 'balReference',
       group: 'Normal Değerler',
     },
     {
@@ -755,6 +757,8 @@ export default function App() {
           <SpirometryGliScreen />
         ) : activeScreen === 'immunologyReference' ? (
           <ImmunologyReferenceScreen />
+        ) : activeScreen === 'balReference' ? (
+          <BalReferenceScreen />
         ) : selectedScreen ? (
           <GuideDetail screen={selectedScreen} />
         ) : null}

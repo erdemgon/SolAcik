@@ -13,13 +13,22 @@ import {
   type ImmunologyAnalyte,
   type ImmunologyReferenceRow,
 } from '../data/reference/immunologyValues';
+import {
+  lymphocyteAgeLabels,
+  lymphocyteSubsetRows,
+  uploadedIgGSubclassRows,
+  uploadedImmunologyTableSource,
+  uploadedSerumIgRows,
+} from '../data/reference/uploadedImmunologyTables';
 
-type TabKey = 'age' | 'interpret' | 'table' | 'source';
+type TabKey = 'age' | 'interpret' | 'table' | 'serumUploaded' | 'lymphocytes' | 'source';
 
 const tabs: { key: TabKey; label: string }[] = [
   { key: 'age', label: 'Yaşa Göre' },
   { key: 'interpret', label: 'Değer Yorumla' },
   { key: 'table', label: 'Tam Tablo' },
+  { key: 'serumUploaded', label: 'Ek Serum Ig' },
+  { key: 'lymphocytes', label: 'Lenfosit Alt Grup' },
   { key: 'source', label: 'Kaynak' },
 ];
 
@@ -66,8 +75,8 @@ export function ImmunologyReferenceScreen() {
         <Text style={styles.kicker}>Normal değerler</Text>
         <Text style={styles.title}>İmmünolojik Değerler: Yaşa Göre Türkiye Çocuk Referansları</Text>
         <Text style={styles.description}>
-          IgG, IgA, IgM ve 25 ay üzeri çocuklarda IgG alt grup düzeylerini yaşa göre
-          hızlı görüntüler. Girilen değerler kalıcı saklanmaz.
+          IgG, IgA, IgM, IgG alt grupları ve periferik kan lenfosit alt grup
+          referanslarını yaşa göre hızlı görüntüler. Girilen değerler kalıcı saklanmaz.
         </Text>
       </View>
 
@@ -156,6 +165,29 @@ export function ImmunologyReferenceScreen() {
 
       {activeTab === 'table' ? <FullReferenceTable /> : null}
 
+      {activeTab === 'serumUploaded' ? (
+        <>
+          <WarningBox
+            tone="amber"
+            title="Ek tablo kaynağı"
+            text={uploadedImmunologyTableSource.warning}
+          />
+          <UploadedSerumIgTable />
+          <UploadedIgGSubclassTable />
+        </>
+      ) : null}
+
+      {activeTab === 'lymphocytes' ? (
+        <>
+          <WarningBox
+            tone="amber"
+            title="Lenfosit alt grup uyarısı"
+            text="Periferik kan lenfosit alt grup değerleri yaşa çok bağımlıdır. Mutlak sayı ve yüzde birlikte yorumlanmalı; akut enfeksiyon, steroid/immünsüpresyon, prematürite ve laboratuvar yöntemi dikkate alınmalıdır."
+          />
+          <LymphocyteSubsetTable />
+        </>
+      ) : null}
+
       {activeTab === 'source' ? (
         <>
           <View style={styles.panel}>
@@ -166,6 +198,7 @@ export function ImmunologyReferenceScreen() {
               </Text>
             ))}
           </View>
+          <SourceVersionBadge text={uploadedImmunologyTableSource.badge} />
           <View style={styles.panel}>
             <Text style={styles.panelTitle}>Kaynaklar</Text>
             {immunologySource.sourceLinks.map((source) => (
@@ -174,10 +207,16 @@ export function ImmunologyReferenceScreen() {
                 <Text style={styles.sourceUrl}>{source.url}</Text>
               </View>
             ))}
+            {uploadedImmunologyTableSource.sourceLinks.map((source) => (
+              <View key={source.url} style={styles.sourceBox}>
+                <Text style={styles.sourceTitle}>{source.title}</Text>
+                <Text style={styles.sourceUrl}>{source.url}</Text>
+              </View>
+            ))}
           </View>
           <WarningBox
-            title="Eksik kalan alan"
-            text="Lenfosit alt grupları ve fonksiyonel immünoloji testleri bu ilk sürüme bağlanmadı. Türkiye pediatrik kaynak veya kurum laboratuvar referansı netleşince aynı modüle eklenebilir."
+            title="Kullanım notu"
+            text="Fonksiyonel immünoloji testleri bu sürüme bağlanmadı. Lenfosit alt grup ve serum immünoglobulin değerleri orijinal yayın/laboratuvar referansı ile doğrulanmalıdır."
           />
         </>
       ) : null}
@@ -227,6 +266,93 @@ function ReferenceCard({
       ) : (
         <Text style={styles.cardText}>Değer girilirse yaş aralığına göre durum gösterilir.</Text>
       )}
+    </View>
+  );
+}
+
+function UploadedSerumIgTable() {
+  return (
+    <View style={styles.panel}>
+      <Text style={styles.panelTitle}>Sağlıklı Türk çocuklarında serum Ig değerleri</Text>
+      <Text style={styles.helperText}>mg/dL; hücrelerde ana değer ve parantezli aralıklar gösterilir.</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator>
+        <View>
+          <View style={[styles.tableRow, styles.tableHeader]}>
+            <Text style={[styles.tableCell, styles.ageCell]}>Yaş</Text>
+            <Text style={styles.wideTableCell}>IgG</Text>
+            <Text style={styles.wideTableCell}>IgM</Text>
+            <Text style={styles.wideTableCell}>IgA</Text>
+          </View>
+          {uploadedSerumIgRows.map((row) => (
+            <View key={row.ageLabel} style={styles.tableRow}>
+              <Text style={[styles.tableCell, styles.ageCell]}>{row.ageLabel}</Text>
+              <Text style={styles.wideTableCell}>{row.igG}</Text>
+              <Text style={styles.wideTableCell}>{row.igM}</Text>
+              <Text style={styles.wideTableCell}>{row.igA}</Text>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
+  );
+}
+
+function UploadedIgGSubclassTable() {
+  return (
+    <View style={styles.panel}>
+      <Text style={styles.panelTitle}>Serum IgG alt grup değerleri</Text>
+      <Text style={styles.helperText}>
+        mg/dL. Gönderilen IgG4 başlıklı görseldeki sayılar Bayram 2019 IgG3
+        tablosu ile uyumlu göründüğü için IgG4 burada tekrar gösterilmedi; doğrulanmış
+        IgG4 değerleri ana tabloda yer alır.
+      </Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator>
+        <View>
+          <View style={[styles.tableRow, styles.tableHeader]}>
+            <Text style={[styles.tableCell, styles.ageCell]}>Yaş</Text>
+            <Text style={styles.wideTableCell}>IgG1</Text>
+            <Text style={styles.wideTableCell}>IgG2</Text>
+            <Text style={styles.wideTableCell}>IgG3</Text>
+          </View>
+          {uploadedIgGSubclassRows.map((row) => (
+            <View key={row.ageLabel} style={styles.tableRow}>
+              <Text style={[styles.tableCell, styles.ageCell]}>{row.ageLabel}</Text>
+              <Text style={styles.wideTableCell}>{row.igG1}</Text>
+              <Text style={styles.wideTableCell}>{row.igG2}</Text>
+              <Text style={styles.wideTableCell}>{row.igG3}</Text>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
+  );
+}
+
+function LymphocyteSubsetTable() {
+  return (
+    <View style={styles.panel}>
+      <Text style={styles.panelTitle}>Periferik kan lenfosit alt grupları</Text>
+      <Text style={styles.helperText}>Medyan ve min–maks değerleri. # birimi hücre/µL olarak yorumlanır.</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator>
+        <View>
+          <View style={[styles.tableRow, styles.tableHeader]}>
+            <Text style={styles.markerCell}>Parametre</Text>
+            <Text style={styles.unitCell}>Birim</Text>
+            {lymphocyteAgeLabels.map((label) => (
+              <Text key={label} style={styles.lymphCell}>{label}</Text>
+            ))}
+          </View>
+          {lymphocyteSubsetRows.map((row) => (
+            <View key={`${row.marker}-${row.unit}`} style={styles.tableRow}>
+              <Text style={styles.markerCell}>{row.marker}</Text>
+              <Text style={styles.unitCell}>{row.unit}</Text>
+              {row.values.map((value, index) => (
+                <Text key={`${row.marker}-${index}`} style={styles.lymphCell}>{value}</Text>
+              ))}
+            </View>
+          ))}
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -568,6 +694,42 @@ const styles = StyleSheet.create({
     color: '#302b2c',
     fontSize: 13,
     fontWeight: '700',
+  },
+  wideTableCell: {
+    width: 190,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    color: '#302b2c',
+    fontSize: 12,
+    fontWeight: '700',
+    lineHeight: 17,
+  },
+  markerCell: {
+    width: 180,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    color: '#302b2c',
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  unitCell: {
+    width: 56,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    color: '#302b2c',
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+  },
+  lymphCell: {
+    width: 140,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    color: '#302b2c',
+    fontSize: 12,
+    fontWeight: '700',
+    lineHeight: 17,
   },
   ageCell: {
     width: 112,

@@ -177,6 +177,6 @@ export const immunologyClinicalNotes = [
   'IgA bebeklikte çok düşük olabilir ve yaşla artar; tek başına düşük değer klinik bağlam olmadan tanı değildir.',
   'IgG alt grupları bu veri setinde 25–36 ay ve üzeri çocuklar için verilmiştir.',
   'Protein kaybı, nefrotik sendrom, enteropati, immünsüpresyon, sistemik steroid, biyolojik tedavi ve akut enfeksiyon sonuçları etkileyebilir.',
-  'Lenfosit alt grupları için Türkiye pediatrik referans verisi bu ilk sürüme bağlanmadı; laboratuvar raporundaki yaşa özel aralık önceliklidir.',
-  'Ege Üniversitesi 2006 ve Hacettepe 1994 Türkiye çocuk verileri kaynak notuna eklendi; bu ekranda ana tablo Bayram ve ark. 2019 değerleriyle çalışır.',
+  'Lenfosit alt grupları için yüklenen periferik kan referans tablosu ayrı sekmede gösterilir; laboratuvar raporundaki yaşa özel aralık önceliklidir.',
+  'Ege Üniversitesi 2006, Hacettepe 1994 ve yüklenen ek tablolar kaynak notuna eklendi; hızlı yaş kartları Bayram ve ark. 2019 değerleriyle çalışır.',
 ];
