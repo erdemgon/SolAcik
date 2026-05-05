@@ -32,6 +32,8 @@ import { SystemicSteroidsScreen } from './modules/systemic-steroids';
 import { ImmunologyReferenceScreen } from './modules/immunology-reference';
 import { TracheostomyScreen } from './modules/tracheostomy';
 import { BalReferenceScreen } from './modules/bal-reference';
+import { BpdCalculatorScreen } from './modules/bpd-calculator';
+import { RespiratoryImmunizationScreen } from './modules/respiratory-immunization';
 
 const solAcikLogo = require('./assets/sol-acik-logo.png');
 
@@ -42,6 +44,8 @@ type ScreenKey =
   | 'asthmaBiologics'
   | 'chronicCough'
   | 'bronchiolitis'
+  | 'bpdCalculator'
+  | 'respiratoryImmunization'
   | 'parapneumonicEffusion'
   | 'childInterstitial'
   | 'pediatricPneumonia'
@@ -204,6 +208,18 @@ const categoryModules: Record<string, ModuleLink[]> = {
       description: 'Akut bronşiolit değerlendirme ve izlem checklist’i.',
       target: 'bronchiolitis',
       group: 'Enfeksiyonlar',
+    },
+    {
+      title: 'Bronkopulmoner Displazi',
+      description: 'Türk Neonatoloji Derneği temelli BPD şiddet sınıflaması ve izlem checklist’i.',
+      target: 'bpdCalculator',
+      group: 'Neonatal Solunum',
+    },
+    {
+      title: 'Aşılar ve Monoklonal Antikorlar',
+      description: 'Pnömokok, RSV monoklonal antikor ve influenza doz/aralık hatırlatıcısı.',
+      target: 'respiratoryImmunization',
+      group: 'Koruyucu Solunum Sağlığı',
     },
     {
       title: 'Pnömoni',
@@ -727,6 +743,10 @@ export default function App() {
           <ChronicCoughScreen />
         ) : activeScreen === 'bronchiolitis' ? (
           <BronchiolitisScreen />
+        ) : activeScreen === 'bpdCalculator' ? (
+          <BpdCalculatorScreen />
+        ) : activeScreen === 'respiratoryImmunization' ? (
+          <RespiratoryImmunizationScreen />
         ) : activeScreen === 'parapneumonicEffusion' ? (
           <ParapneumonicEffusionScreen />
         ) : activeScreen === 'childInterstitial' ? (
