@@ -34,6 +34,8 @@ import { TracheostomyScreen } from './modules/tracheostomy';
 import { BalReferenceScreen } from './modules/bal-reference';
 import { BpdCalculatorScreen } from './modules/bpd-calculator';
 import { RespiratoryImmunizationScreen } from './modules/respiratory-immunization';
+import { ClinicalSourcePanel } from './components/common/ClinicalSourcePanel';
+import { getClinicalModuleMetadata } from './data/contentGovernance';
 
 const solAcikLogo = require('./assets/sol-acik-logo.png');
 
@@ -669,6 +671,7 @@ export default function App() {
     [activeScreen],
   );
   const selectedCategory = categoryModules[activeScreen] ? activeScreen : null;
+  const clinicalMetadata = getClinicalModuleMetadata(activeScreen);
 
   if (!hasAcceptedDisclaimer) {
     return (
@@ -730,6 +733,8 @@ export default function App() {
             </Text>
           </View>
         </View>
+
+        {clinicalMetadata ? <ClinicalSourcePanel metadata={clinicalMetadata} /> : null}
 
         {activeScreen === 'home' ? (
           <HomeScreen onOpen={setActiveScreen} />
