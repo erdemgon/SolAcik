@@ -1,0 +1,253 @@
+export type ClinicalModuleMetadata = {
+  moduleId: string;
+  sourceTitle: string;
+  sourceVersion: string;
+  lastCheckedDate: string;
+  clinicalEditor: string;
+  disclaimer: string;
+};
+
+const DEFAULT_DISCLAIMER =
+  'Eğitim, hızlı hatırlatma ve checklist amacı taşır; tanı, reçete, tedavi veya kurum kararı yerine geçmez. Resmi kaynak, yerel protokol ve klinisyen değerlendirmesi ile doğrulanmalıdır.';
+
+const DEFAULT_EDITOR = 'Sol Açık klinik editör taslağı';
+const LAST_CHECKED = '2026-05-05';
+
+export const clinicalModuleMetadata: Record<string, ClinicalModuleMetadata> = {
+  asthma: {
+    moduleId: 'asthma',
+    sourceTitle: 'Astım hızlı rehber taslağı',
+    sourceVersion: 'Yerel eğitim checklist’i; GINA yönetim modülü ana astım kaynağıdır',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  asthmaManagement: {
+    moduleId: 'asthmaManagement',
+    sourceTitle: 'Global Initiative for Asthma',
+    sourceVersion: 'GINA 2025 özet mantığı; GINA 2026 ile güncellenecek',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  asthmaBiologics: {
+    moduleId: 'asthmaBiologics',
+    sourceTitle: 'GINA 2025 + ürün KÜB/KT biyolojik tedavi bilgileri',
+    sourceVersion: '2025/2026 yerel ürün doğrulaması gerekir',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  chronicCough: {
+    moduleId: 'chronicCough',
+    sourceTitle: 'Kronik öksürük eğitim algoritması',
+    sourceVersion: 'Kurum sunumu uyarlaması; resmi rehberle doğrulanmalıdır',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  nonCfBronchiectasis: {
+    moduleId: 'nonCfBronchiectasis',
+    sourceTitle: 'ERS çocuk non-CF bronşektazi rehber mantığı',
+    sourceVersion: 'ERS pediatrik bronşektazi rehber özeti',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  primaryCiliaryDyskinesia: {
+    moduleId: 'primaryCiliaryDyskinesia',
+    sourceTitle: 'ERS/ATS primer siliyer diskinezi tanı-izlem rehber mantığı',
+    sourceVersion: 'Kılavuz özeti; merkez protokolü ile doğrulanmalıdır',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  cf: {
+    moduleId: 'cf',
+    sourceTitle: 'Kistik fibrozis yıllık izlem checklist’i',
+    sourceVersion: 'Merkez protokolüyle doğrulanacak eğitim taslağı',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  cftrModulator: {
+    moduleId: 'cftrModulator',
+    sourceTitle: 'CFTR modülatör ürün bilgileri',
+    sourceVersion: 'FDA/EMA 2026; yerel ruhsat/geri ödeme ayrıca doğrulanmalıdır',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  childhoodTb: {
+    moduleId: 'childhoodTb',
+    sourceTitle: 'T.C. Sağlık Bakanlığı Tüberküloz Tanı ve Tedavi Rehberi',
+    sourceVersion: '2026 pediatrik TB bölümü özeti',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  bronchiolitis: {
+    moduleId: 'bronchiolitis',
+    sourceTitle: 'Bronşiolit rehber özeti',
+    sourceVersion: 'Türk Toraks/çocuk rehber mantığı; kurum protokolüyle doğrulanmalıdır',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  pediatricPneumonia: {
+    moduleId: 'pediatricPneumonia',
+    sourceTitle: 'Çocukluk çağı pnömoni rehber özeti',
+    sourceVersion: 'Toplumda gelişen + immün baskılanmış çocuk pnömonisi eğitim taslağı',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  parapneumonicEffusion: {
+    moduleId: 'parapneumonicEffusion',
+    sourceTitle: 'Parapnömonik efüzyon ve Light kriterleri eğitim özeti',
+    sourceVersion: 'Pediatrik klinik algoritma taslağı',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  childInterstitial: {
+    moduleId: 'childInterstitial',
+    sourceTitle: 'ERS chILD karar ağacı yaklaşımı',
+    sourceVersion: 'Pediatrik interstisyel akciğer hastalıkları eğitim özeti',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  pibo: {
+    moduleId: 'pibo',
+    sourceTitle: 'PIBO izlem checklist’i',
+    sourceVersion: 'Eğitim taslağı; merkez protokolüyle doğrulanmalıdır',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  pediatricOsasSleep: {
+    moduleId: 'pediatricOsasSleep',
+    sourceTitle: 'Pediatrik OSAS ve uyku klinik algoritması',
+    sourceVersion: 'Eğitim taslağı; PSG ve uyku merkezi protokolü önceliklidir',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  hemoptysisEmergency: {
+    moduleId: 'hemoptysisEmergency',
+    sourceTitle: 'Hemoptizi acil yaklaşım checklist’i',
+    sourceVersion: 'Acil klinik eğitim taslağı; kurum protokolü önceliklidir',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  pulmonaryHypertensionEmergency: {
+    moduleId: 'pulmonaryHypertensionEmergency',
+    sourceTitle: 'Pulmoner hipertansiyon acil yaklaşım checklist’i',
+    sourceVersion: 'Acil klinik eğitim taslağı; PH merkezi/kardiyoloji protokolü önceliklidir',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  bpdCalculator: {
+    moduleId: 'bpdCalculator',
+    sourceTitle: 'Türk Neonatoloji Derneği BPD Korunma ve İzlem Rehberi',
+    sourceVersion: '2018; Jensen/NICHD 2019 karşılaştırması seçimlik',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  bronchoscopyProcedure: {
+    moduleId: 'bronchoscopyProcedure',
+    sourceTitle: 'Bronkoskopi ve BAL eğitim dosyaları',
+    sourceVersion: 'Yüklenen BAL kaynakları + kurum protokol taslağı',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  bronchoscopeCompat: {
+    moduleId: 'bronchoscopeCompat',
+    sourceTitle: 'Bronkoskop üretici katalog/IFU doğrulama tablosu',
+    sourceVersion: 'Seed data; resmi IFU/katalog ile doğrulanmalıdır',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  trach: {
+    moduleId: 'trach',
+    sourceTitle: 'Trakeostomi acil algoritması ve kanül boyutu hatırlatıcı',
+    sourceVersion: 'Eğitim taslağı; yerel acil protokol önceliklidir',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  homeVentilation: {
+    moduleId: 'homeVentilation',
+    sourceTitle: 'Ev ventilatörü izlem eğitim notu',
+    sourceVersion: 'Yüklenen kurum dokümanı uyarlaması; cihaz protokolüyle doğrulanmalıdır',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  inhaledMedications: {
+    moduleId: 'inhaledMedications',
+    sourceTitle: 'GINA ve Türkiye KÜB/KT inhaler ilaç verisi',
+    sourceVersion: 'GINA 2025 / Türkiye KÜB-KT; GINA 2026 ile güncellenecek',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  systemicSteroids: {
+    moduleId: 'systemicSteroids',
+    sourceTitle: 'Sistemik steroid eşdeğer ve doz kartları',
+    sourceVersion: 'Türkiye müstahzar ve form bilgileri taslağı; KÜB/KT ile doğrulanmalıdır',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  respiratoryImmunization: {
+    moduleId: 'respiratoryImmunization',
+    sourceTitle: 'CDC/ACIP + ürün bilgileri solunum aşıları ve RSV mAb',
+    sourceVersion: '2025-2026; Türkiye KÜB/KT, SUT ve kurum protokolüyle doğrulanmalıdır',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  inhaler: {
+    moduleId: 'inhaler',
+    sourceTitle: 'İnhaler cihaz eğitim kartları',
+    sourceVersion: 'Eğitim checklist’i; ürün kullanım talimatıyla doğrulanmalıdır',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  immunologyReference: {
+    moduleId: 'immunologyReference',
+    sourceTitle: 'Türkiye çocuk immünoglobulin ve lenfosit referans yayınları',
+    sourceVersion: 'Bayram 2019 + Besci 2021 ek tabloları',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  balReference: {
+    moduleId: 'balReference',
+    sourceTitle: 'Çocuk BAL normal değer eğitim kaynakları',
+    sourceVersion: 'Yüklenen BAL PDF/DOCX kaynakları; laboratuvar protokolüyle doğrulanmalıdır',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+  spirometryGli: {
+    moduleId: 'spirometryGli',
+    sourceTitle: 'Global Lung Function Initiative',
+    sourceVersion: 'GLI-2012 / GLI Global 2022 race-neutral; katsayı motoru doğrulaması gerekir',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
+};
+
+export function getClinicalModuleMetadata(moduleId: string) {
+  return clinicalModuleMetadata[moduleId] ?? null;
+}
