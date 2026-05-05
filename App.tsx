@@ -58,6 +58,7 @@ type ScreenKey =
   | 'categoryProcedures'
   | 'categoryTechnology'
   | 'categoryReferences'
+  | 'categoryMedications'
   | 'pibo'
   | 'cf'
   | 'trach'
@@ -148,8 +149,13 @@ const homeCategories: HomeCategory[] = [
   },
   {
     key: 'categoryReferences',
-    title: 'Normal Değerler, İlaç Dozları ve Sık Kullanılanlar',
-    description: 'İnhaler ilaçlar, immünolojik değerler, BAL ve spirometri referansları.',
+    title: 'Normal Değerler',
+    description: 'İmmünolojik değerler, BAL hücre popülasyonları ve spirometri referansları.',
+  },
+  {
+    key: 'categoryMedications',
+    title: 'İlaçlar, Aşılar ve Dozlar',
+    description: 'İnhaler ilaçlar, sistemik steroidler, aşılar, monoklonal antikorlar ve sık kullanılan doz araçları.',
   },
 ];
 
@@ -300,6 +306,26 @@ const categoryModules: Record<string, ModuleLink[]> = {
   ],
   categoryReferences: [
     {
+      title: 'İmmünolojik Değerler',
+      description: 'Türkiye çocuk verisiyle yaşa göre IgG, IgA, IgM ve IgG alt grup referansları.',
+      target: 'immunologyReference',
+      group: 'İmmünoloji',
+    },
+    {
+      title: 'BAL Hücre Popülasyon Değerleri',
+      description: 'Yüklenen çocuk BAL normal hücre ve lenfosit alt popülasyon değerleri.',
+      target: 'balReference',
+      group: 'Bronkoskopi / BAL',
+    },
+    {
+      title: 'Spirometri GLI',
+      description: 'Çocuklarda yaş, cinsiyet ve boya göre normal değer ve z-skor hesaplayıcı.',
+      target: 'spirometryGli',
+      group: 'Solunum Fonksiyon',
+    },
+  ],
+  categoryMedications: [
+    {
       title: 'İnhale İlaçlar',
       description: 'Yaşa göre inhaler, nebül ve kuru toz seçici.',
       target: 'inhaledMedications',
@@ -321,37 +347,19 @@ const categoryModules: Record<string, ModuleLink[]> = {
       title: 'İnhaler Cihaz Eğitim Kartları',
       description: 'Hasta ve aile eğitiminde hızlı cihaz tekniği kontrolü.',
       target: 'inhaler',
-      group: 'İlaçlar',
-    },
-    {
-      title: 'İmmünolojik Değerler',
-      description: 'Türkiye çocuk verisiyle yaşa göre IgG, IgA, IgM ve IgG alt grup referansları.',
-      target: 'immunologyReference',
-      group: 'Normal Değerler',
-    },
-    {
-      title: 'BAL Hücre Popülasyon Değerleri',
-      description: 'Yüklenen çocuk BAL normal hücre ve lenfosit alt popülasyon değerleri.',
-      target: 'balReference',
-      group: 'Normal Değerler',
-    },
-    {
-      title: 'Spirometri GLI',
-      description: 'Çocuklarda yaş, cinsiyet ve boya göre normal değer ve z-skor hesaplayıcı.',
-      target: 'spirometryGli',
-      group: 'Normal Değerler',
+      group: 'Cihazlar',
     },
     {
       title: 'Kaynaklar ve Yasal Uyarı',
       description: 'Açık kaynak, eğitim amacı ve kullanım sınırları.',
       target: 'resources',
-      group: 'Uygulama',
+      group: 'Sık Kullanılanlar',
     },
     {
       title: 'Notlarım',
       description: 'Kişisel hatırlatmalar ve kurum içi kısa notlar.',
       target: 'notes',
-      group: 'Uygulama',
+      group: 'Sık Kullanılanlar',
     },
   ],
 };
