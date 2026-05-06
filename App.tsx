@@ -36,6 +36,12 @@ import { BpdCalculatorScreen } from './modules/bpd-calculator';
 import { BoFamCalculatorScreen } from './modules/bo-fam-calculator';
 import { RespiratoryImmunizationScreen } from './modules/respiratory-immunization';
 import { ClinicalSourcePanel } from './components/common/ClinicalSourcePanel';
+import { EditorFeedbackBox } from './components/common/EditorFeedbackBox';
+import {
+  AccessSession,
+  accessPolicy,
+  validateInviteCode,
+} from './data/accessControl';
 import { getClinicalModuleMetadata } from './data/contentGovernance';
 import { appBuildInfo } from './data/appBuildInfo';
 
@@ -816,6 +822,7 @@ export default function App() {
   const [notes, setNotes] = useState('');
   const [hasAcceptedDisclaimer, setHasAcceptedDisclaimer] = useState(false);
   const [isDisclaimerChecked, setIsDisclaimerChecked] = useState(false);
+  const [accessSession, setAccessSession] = useState<AccessSession | null>(null);
 
   const selectedScreen = useMemo(
     () => screens.find((screen) => screen.key === activeScreen),
@@ -854,6 +861,30 @@ export default function App() {
     );
   }
 
+  if (!accessSession) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar style="dark" />
+        <View style={styles.appFrame}>
+          <View style={styles.header}>
+            <View style={styles.logoMark}>
+              <Image
+                accessibilityLabel="Sol Açık logosu"
+                source={solAcikLogo}
+                style={styles.headerLogoImage}
+              />
+            </View>
+            <View style={styles.headerTextWrap}>
+              <Text style={styles.appName}>Sol Açık</Text>
+              <Text style={styles.appSubtitle}>Build 0.3 kontrollü beta girişi</Text>
+            </View>
+          </View>
+          <AccessGateScreen onEnter={setAccessSession} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
@@ -883,12 +914,18 @@ export default function App() {
               Açık Kaynak Çocuk Göğüs Klinik Asistanı
             </Text>
           </View>
+          <View style={styles.rolePill}>
+            <Text style={styles.rolePillText}>{accessSession.role === 'admin' ? 'Admin' : accessSession.role === 'editor' ? 'Editör' : 'Beta'}</Text>
+          </View>
         </View>
 
         {clinicalMetadata ? <ClinicalSourcePanel metadata={clinicalMetadata} /> : null}
+        {clinicalMetadata && accessSession.role !== 'beta' ? (
+          <EditorFeedbackBox moduleTitle={clinicalMetadata.sourceTitle} session={accessSession} />
+        ) : null}
 
         {activeScreen === 'home' ? (
-          <HomeScreen onOpen={setActiveScreen} />
+          <HomeScreen accessSession={accessSession} onOpen={setActiveScreen} />
         ) : selectedCategory ? (
           <CategoryScreen categoryKey={selectedCategory} onOpen={setActiveScreen} />
         ) : activeScreen === 'notes' ? (
@@ -1031,7 +1068,84 @@ function ConsentScreen({
   );
 }
 
-function HomeScreen({ onOpen }: { onOpen: (screen: ScreenKey) => void }) {
+function AccessGateScreen({ onEnter }: { onEnter: (session: AccessSession) => void }) {
+  const [displayName, setDisplayName] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
+  const [error, setError] = useState('');
+
+  function handleEnter() {
+    const result = validateInviteCode({ displayName, inviteCode });
+    if (!result.ok) {
+      setError(result.message);
+      return;
+    }
+
+    setError('');
+    onEnter(result.session);
+  }
+
+  return (
+    <ScrollView contentContainerStyle={styles.scrollContent}>
+      <View style={styles.accessCard}>
+        <Text style={styles.screenKicker}>Kontrollü erişim</Text>
+        <Text style={styles.screenTitle}>{accessPolicy.buildLabel}</Text>
+        <Text style={styles.screenDescription}>{accessPolicy.warning}</Text>
+
+        <View style={styles.accessNoticeBox}>
+          <Text style={styles.accessNoticeTitle}>Rol mantığı</Text>
+          <Text style={styles.accessNoticeText}>
+            Admin ve editörler modüllerde sarı feedback alanı görür. Beta kullanıcılar
+            yalnızca uygulamayı test eder; feedback alanları görünmez.
+          </Text>
+        </View>
+
+        <View style={styles.accessInputBlock}>
+          <Text style={styles.accessLabel}>Kullanıcı adı</Text>
+          <TextInput
+            autoCapitalize="words"
+            autoCorrect={false}
+            onChangeText={setDisplayName}
+            placeholder="Adınız veya editör kısa isminiz"
+            placeholderTextColor="#8a8a8a"
+            style={styles.accessInput}
+            value={displayName}
+          />
+        </View>
+
+        <View style={styles.accessInputBlock}>
+          <Text style={styles.accessLabel}>Davet kodu</Text>
+          <TextInput
+            autoCapitalize="characters"
+            autoCorrect={false}
+            onChangeText={setInviteCode}
+            placeholder="Örn. SOL-BETA-2026"
+            placeholderTextColor="#8a8a8a"
+            style={styles.accessInput}
+            value={inviteCode}
+          />
+        </View>
+
+        {error ? <Text style={styles.accessError}>{error}</Text> : null}
+
+        <Pressable
+          accessibilityRole="button"
+          onPress={handleEnter}
+          style={({ pressed }) => [styles.accessButton, pressed ? styles.cardPressed : undefined]}
+        >
+          <Text style={styles.accessButtonText}>Sol Açık’a gir</Text>
+        </Pressable>
+      </View>
+    </ScrollView>
+  );
+}
+
+function HomeScreen({
+  accessSession,
+  onOpen,
+}: {
+  accessSession: AccessSession;
+  onOpen: (screen: ScreenKey) => void;
+}) {
   const [query, setQuery] = useState('');
   const [selectedMode, setSelectedMode] = useState<ScreenKey>('categoryDiseases');
   const normalizedQuery = normalizeSearchText(query.trim());
@@ -1073,6 +1187,9 @@ function HomeScreen({ onOpen }: { onOpen: (screen: ScreenKey) => void }) {
         </Text>
         <Text style={styles.latestChangeText}>
           İçerik güncelleme {appBuildInfo.contentLastUpdatedDate}: {appBuildInfo.latestChange}
+        </Text>
+        <Text style={styles.accessSessionText}>
+          Oturum: {accessSession.displayName} · {accessSession.roleLabel}
         </Text>
       </View>
 
@@ -1678,6 +1795,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 2,
   },
+  rolePill: {
+    backgroundColor: SOFT_ACCENT,
+    borderColor: '#efcbd2',
+    borderRadius: 8,
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+  },
+  rolePillText: {
+    color: ACCENT,
+    fontSize: 11,
+    fontWeight: '900',
+  },
   scrollContent: {
     gap: 14,
     padding: 18,
@@ -1739,6 +1869,14 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     lineHeight: 16,
     marginTop: 4,
+    textAlign: 'center',
+  },
+  accessSessionText: {
+    color: MUTED,
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 16,
+    marginTop: 6,
     textAlign: 'center',
   },
   searchPanel: {
@@ -1857,6 +1995,71 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     gap: 16,
     padding: 18,
+  },
+  accessCard: {
+    backgroundColor: '#fff',
+    borderColor: '#ececee',
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 14,
+    padding: 18,
+  },
+  accessNoticeBox: {
+    backgroundColor: '#fff7e6',
+    borderColor: '#f0c36a',
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 5,
+    padding: 12,
+  },
+  accessNoticeTitle: {
+    color: '#8a5a00',
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  accessNoticeText: {
+    color: TEXT,
+    fontSize: 13,
+    lineHeight: 19,
+  },
+  accessInputBlock: {
+    gap: 6,
+  },
+  accessLabel: {
+    color: ACCENT,
+    fontSize: 12,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  accessInput: {
+    backgroundColor: CARD,
+    borderColor: '#dfdfe3',
+    borderRadius: 8,
+    borderWidth: 1,
+    color: TEXT,
+    fontSize: 16,
+    minHeight: 46,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  accessError: {
+    color: ACCENT,
+    fontSize: 13,
+    fontWeight: '900',
+    lineHeight: 18,
+  },
+  accessButton: {
+    alignItems: 'center',
+    backgroundColor: ACCENT,
+    borderRadius: 8,
+    minHeight: 44,
+    paddingHorizontal: 12,
+    paddingVertical: 11,
+  },
+  accessButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '900',
   },
   consentTextBlock: {
     backgroundColor: CARD,

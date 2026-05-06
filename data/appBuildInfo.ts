@@ -1,7 +1,7 @@
 export const appBuildInfo = {
-  appVersion: '0.2.0-dev',
-  buildLabel: 'Sol Açık klinik editör taslağı',
-  buildDate: '2026-05-05',
-  contentLastUpdatedDate: '2026-05-05',
-  latestChange: 'Astım modülü GINA 2026 sade klinik akış taslağına güncellendi.',
+  appVersion: '0.3.0-beta',
+  buildLabel: 'Sol Açık kontrollü beta / editör taslağı',
+  buildDate: '2026-05-06',
+  contentLastUpdatedDate: '2026-05-06',
+  latestChange: 'Build 0.3 kontrollü beta girişi ve editör feedback alanları eklendi.',
 };
