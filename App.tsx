@@ -891,14 +891,23 @@ export default function App() {
       <View style={styles.appFrame}>
         <View style={styles.header}>
           {activeScreen !== 'home' ? (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Ana sayfaya dön"
-              onPress={() => setActiveScreen('home')}
-              style={styles.backButton}
-            >
-              <Text style={styles.backButtonText}>‹</Text>
-            </Pressable>
+            <View style={styles.backLogoGroup}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Ana sayfaya dön"
+                onPress={() => setActiveScreen('home')}
+                style={styles.backButton}
+              >
+                <Text style={styles.backButtonText}>‹</Text>
+              </Pressable>
+              <View style={styles.smallLogoMark}>
+                <Image
+                  accessibilityLabel="Sol Açık logosu"
+                  source={solAcikLogo}
+                  style={styles.smallHeaderLogoImage}
+                />
+              </View>
+            </View>
           ) : (
             <View style={styles.logoMark}>
               <Image
@@ -1767,6 +1776,26 @@ const styles = StyleSheet.create({
   headerLogoImage: {
     height: 38,
     width: 38,
+  },
+  backLogoGroup: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 7,
+  },
+  smallLogoMark: {
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderColor: '#e4e4e7',
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 34,
+    justifyContent: 'center',
+    overflow: 'hidden',
+    width: 34,
+  },
+  smallHeaderLogoImage: {
+    height: 30,
+    width: 30,
   },
   backButton: {
     alignItems: 'center',
