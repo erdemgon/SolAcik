@@ -15,6 +15,20 @@ const roleOptions = [
 
 const editOptions = ['Ben düzenlemek isterim', 'Sadece öneri bırakıyorum'];
 
+const contributionAreas = [
+  'Astım',
+  'Kistik fibrozis',
+  'Tüberküloz',
+  'Bronkoskopi / BAL',
+  'Girişimsel işlemler',
+  'Solunum teknolojileri',
+  'Enfeksiyonlar',
+  'Normal değerler / laboratuvar',
+  'İlaç / doz',
+  'Genel kullanılabilirlik',
+  'Diğer',
+];
+
 export function EditorFeedbackBox({
   moduleTitle,
   session,
@@ -23,6 +37,7 @@ export function EditorFeedbackBox({
   session: AccessSession;
 }) {
   const [clinicalRole, setClinicalRole] = useState(roleOptions[0]);
+  const [contributionArea, setContributionArea] = useState(contributionAreas[9]);
   const [editIntent, setEditIntent] = useState(editOptions[1]);
   const [feedback, setFeedback] = useState('');
   const [suggestedEdit, setSuggestedEdit] = useState('');
@@ -35,6 +50,7 @@ export function EditorFeedbackBox({
     `Kullanıcı: ${session.displayName}`,
     `Uygulama rolü: ${session.roleLabel}`,
     `Klinik rol: ${clinicalRole}`,
+    `Katkı alanı: ${contributionArea}`,
     `Düzenleme niyeti: ${editIntent}`,
     `Eleştiri/sorun: ${feedback.trim() || '-'}`,
     `Önerilen düzenleme: ${suggestedEdit.trim() || '-'}`,
@@ -59,6 +75,14 @@ export function EditorFeedbackBox({
       </Text>
 
       <OptionRow options={roleOptions} selected={clinicalRole} onSelect={setClinicalRole} />
+      <View style={styles.sectionBlock}>
+        <Text style={styles.label}>Katkı vermek istediğiniz alan</Text>
+        <OptionRow
+          options={contributionAreas}
+          selected={contributionArea}
+          onSelect={setContributionArea}
+        />
+      </View>
       <OptionRow options={editOptions} selected={editIntent} onSelect={setEditIntent} />
 
       <InputBlock
@@ -209,6 +233,9 @@ const styles = StyleSheet.create({
   },
   inputBlock: {
     gap: 5,
+  },
+  sectionBlock: {
+    gap: 6,
   },
   label: {
     color: '#8a5a00',

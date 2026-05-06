@@ -34,18 +34,6 @@ export const inviteCodes: InviteCodeRecord[] = [
     inviteLabel: 'Genel klinik editör daveti',
   },
   {
-    code: 'SOL-EDITOR-ASTIM',
-    role: 'editor',
-    roleLabel: 'Editör / astım modülü',
-    inviteLabel: 'Astım klinik editör daveti',
-  },
-  {
-    code: 'SOL-EDITOR-GIRISIM',
-    role: 'editor',
-    roleLabel: 'Editör / girişimsel işlemler',
-    inviteLabel: 'Bronkoskopi ve işlem editör daveti',
-  },
-  {
     code: 'SOL-BETA-2026',
     role: 'beta',
     roleLabel: 'Beta kullanıcı',
