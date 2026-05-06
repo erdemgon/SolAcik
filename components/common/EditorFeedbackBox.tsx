@@ -36,6 +36,7 @@ export function EditorFeedbackBox({
   moduleTitle: string;
   session: AccessSession;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
   const [clinicalRole, setClinicalRole] = useState(roleOptions[0]);
   const [contributionArea, setContributionArea] = useState(contributionAreas[9]);
   const [editIntent, setEditIntent] = useState(editOptions[1]);
@@ -63,12 +64,36 @@ export function EditorFeedbackBox({
     setCopied(true);
   }
 
+  if (!isOpen) {
+    return (
+      <View style={styles.collapsedBox}>
+        <Text style={styles.collapsedText}>
+          Bu modül için editör notu bırakmak isterseniz feedback alanını açabilirsiniz.
+        </Text>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => setIsOpen(true)}
+          style={({ pressed }) => [styles.openButton, pressed ? styles.pressed : undefined]}
+        >
+          <Text style={styles.openButtonText}>Feedback vermek istiyorum</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.box}>
       <View style={styles.header}>
         <Text style={styles.title}>Editör feedback alanı</Text>
         <Text style={styles.badge}>{session.role === 'admin' ? 'Admin' : 'Editör'}</Text>
       </View>
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => setIsOpen(false)}
+        style={({ pressed }) => [styles.closeButton, pressed ? styles.pressed : undefined]}
+      >
+        <Text style={styles.closeButtonText}>Feedback alanını kapat</Text>
+      </Pressable>
       <Text style={styles.help}>
         Bu sarı alan yalnızca admin/editör görünümünde çıkar. Hasta kimliği yazmayın;
         eleştiri, öneri ve kaynak notunu kopyalayıp klinik editör sorumlusuna iletin.
@@ -170,6 +195,36 @@ function InputBlock({
 }
 
 const styles = StyleSheet.create({
+  collapsedBox: {
+    alignItems: 'center',
+    backgroundColor: '#fff7e6',
+    borderColor: '#f0c36a',
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 8,
+    marginHorizontal: 18,
+    marginTop: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  collapsedText: {
+    color: '#5d5658',
+    fontSize: 12,
+    fontWeight: '800',
+    lineHeight: 17,
+    textAlign: 'center',
+  },
+  openButton: {
+    backgroundColor: '#8a5a00',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+  },
+  openButtonText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '900',
+  },
   box: {
     backgroundColor: '#fff7e6',
     borderColor: '#f0c36a',
@@ -200,6 +255,21 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     paddingHorizontal: 8,
     paddingVertical: 4,
+  },
+  closeButton: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: '#ffffff',
+    borderColor: '#e4c26d',
+    borderRadius: 8,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+  },
+  closeButtonText: {
+    color: '#8a5a00',
+    fontSize: 12,
+    fontWeight: '900',
   },
   help: {
     color: '#5d5658',
