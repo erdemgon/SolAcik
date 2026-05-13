@@ -15,9 +15,9 @@ type InviteCodeRecord = {
 };
 
 export const accessPolicy = {
-  buildLabel: 'Build 0.3 kontrollü beta',
+  buildLabel: 'Build 0.3 gözlem kapalı',
   warning:
-    'Build 0.3 sonrası Sol Açık yalnızca beta kullanıcılar, editör adayları ve klinik editör kurulu için kontrollü değerlendirme sürümüdür. Bu basit davet kodu sistemi gerçek kimlik doğrulama değildir; açık kaynak beta ayrımı amacı taşır.',
+    'Sol Açık geçici olarak dış beta ve editör erişimine kapatılmıştır. Bu sürüm yalnızca kurucu klinik editör/admin tarafından gözden geçirilecektir. Bu basit davet kodu sistemi gerçek kimlik doğrulama değildir; açık kaynak geliştirme sürecinde geçici erişim ayrımı amacı taşır.',
 };
 
 export const inviteCodes: InviteCodeRecord[] = [
@@ -26,18 +26,6 @@ export const inviteCodes: InviteCodeRecord[] = [
     role: 'admin',
     roleLabel: 'Admin / klinik editör sorumlusu',
     inviteLabel: 'Kurucu klinik editör',
-  },
-  {
-    code: 'SOL-EDITOR-2026',
-    role: 'editor',
-    roleLabel: 'Editör / editör adayı',
-    inviteLabel: 'Genel klinik editör daveti',
-  },
-  {
-    code: 'SOL-BETA-2026',
-    role: 'beta',
-    roleLabel: 'Beta kullanıcı',
-    inviteLabel: 'Test drive beta daveti',
   },
 ];
 

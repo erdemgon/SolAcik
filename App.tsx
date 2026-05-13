@@ -1101,10 +1101,11 @@ function AccessGateScreen({ onEnter }: { onEnter: (session: AccessSession) => vo
         <Text style={styles.screenDescription}>{accessPolicy.warning}</Text>
 
         <View style={styles.accessNoticeBox}>
-          <Text style={styles.accessNoticeTitle}>Rol mantığı</Text>
+          <Text style={styles.accessNoticeTitle}>Gözlem modu kapalı</Text>
           <Text style={styles.accessNoticeText}>
-            Admin ve editörler modüllerde sarı feedback alanı görür. Beta kullanıcılar
-            yalnızca uygulamayı test eder; feedback alanları görünmez.
+            Editör ve beta kullanıcı davetleri geçici olarak durduruldu. Şimdilik yalnızca
+            admin koduyla giriş yapılabilir; dış değerlendirme yeniden açıldığında yeni
+            davet metni paylaşılacaktır.
           </Text>
         </View>
 
@@ -1127,7 +1128,7 @@ function AccessGateScreen({ onEnter }: { onEnter: (session: AccessSession) => vo
             autoCapitalize="characters"
             autoCorrect={false}
             onChangeText={setInviteCode}
-            placeholder="Örn. SOL-BETA-2026"
+            placeholder="Admin davet kodu"
             placeholderTextColor="#8a8a8a"
             style={styles.accessInput}
             value={inviteCode}
