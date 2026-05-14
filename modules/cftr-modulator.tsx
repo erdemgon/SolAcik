@@ -13,6 +13,10 @@ import { VariantNormalizationNote } from '../components/cftr/VariantNormalizatio
 import {
   cftrSourceBadge,
 } from '../data/cftr/modulatorEligibilityRules';
+import {
+  cftrVariantUpdatePolicy,
+  cftrVariantUpdateSources,
+} from '../data/cftr/cftrVariantUpdateSources';
 import { checkModulatorEligibility } from '../utils/cftr/checkModulatorEligibility';
 import { normalizeCftrVariant } from '../utils/cftr/normalizeCftrVariant';
 
@@ -153,6 +157,18 @@ export function CftrModulatorScreen() {
 
       {activeTab === 'source' ? (
         <>
+          <InfoCard
+            title="Vertex varyant güncelleme durumu"
+            items={[
+              cftrVariantUpdatePolicy.statusLabel,
+              cftrVariantUpdatePolicy.currentAppBehavior,
+              cftrVariantUpdatePolicy.safety,
+              ...cftrVariantUpdateSources.map(
+                (source) =>
+                  `${source.drugName}: ${source.lastManualCheckDate} tarihinde manuel kontrol edildi; kaynak: ${source.url}`,
+              ),
+            ]}
+          />
           {sourceWarnings.map((warning) => (
             <WarningBox key={warning} tone="amber" title="Uyarı" text={warning} />
           ))}
