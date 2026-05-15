@@ -22,6 +22,12 @@ export const accessPolicy = {
 
 export const inviteCodes: InviteCodeRecord[] = [
   {
+    code: '3112443',
+    role: 'admin',
+    roleLabel: 'Admin / klinik editör sorumlusu',
+    inviteLabel: 'Kurucu klinik editör kısa kod',
+  },
+  {
     code: 'SOL-ADMIN-ERDEM',
     role: 'admin',
     roleLabel: 'Admin / klinik editör sorumlusu',
