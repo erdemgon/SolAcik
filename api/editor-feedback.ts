@@ -98,7 +98,7 @@ async function handlePatch(req: VercelRequest, res: VercelResponse) {
 }
 
 async function supabaseFetch(path: string, init: RequestInit) {
-  const response = await fetch(`${process.env.SUPABASE_URL}${path}`, {
+  const response = await fetch(`${getSupabaseBaseUrl()}${path}`, {
     ...init,
     headers: {
       apikey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? '',
@@ -114,6 +114,13 @@ async function supabaseFetch(path: string, init: RequestInit) {
   }
 
   return response.json();
+}
+
+function getSupabaseBaseUrl() {
+  return (process.env.SUPABASE_URL ?? '')
+    .trim()
+    .replace(/\/+$/, '')
+    .replace(/\/rest\/v1$/, '');
 }
 
 function parseBody(body: unknown): Record<string, unknown> {
