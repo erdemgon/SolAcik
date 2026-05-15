@@ -39,6 +39,7 @@ import { BoFamCalculatorScreen } from './modules/bo-fam-calculator';
 import { RespiratoryImmunizationScreen } from './modules/respiratory-immunization';
 import { ClinicalSourcePanel } from './components/common/ClinicalSourcePanel';
 import { EditorFeedbackBox } from './components/common/EditorFeedbackBox';
+import { AdminFeedbackInbox } from './components/admin/AdminFeedbackInbox';
 import {
   AccessSession,
   accessPolicy,
@@ -90,7 +91,8 @@ type ScreenKey =
   | 'balReference'
   | 'inhaler'
   | 'notes'
-  | 'resources';
+  | 'resources'
+  | 'adminFeedback';
 
 type GuideScreen = {
   key: ScreenKey;
@@ -1013,6 +1015,8 @@ export default function App() {
           <ImmunologyReferenceScreen />
         ) : activeScreen === 'balReference' ? (
           <BalReferenceScreen />
+        ) : activeScreen === 'adminFeedback' && accessSession.role === 'admin' ? (
+          <AdminFeedbackInbox />
         ) : selectedScreen ? (
           <GuideDetail screen={selectedScreen} />
         ) : null}
@@ -1224,6 +1228,25 @@ function HomeScreen({
           Oturum: {accessSession.displayName} · {accessSession.roleLabel}
         </Text>
       </View>
+
+      {accessSession.role === 'admin' ? (
+        <View style={styles.adminPanel}>
+          <View style={styles.adminPanelTextWrap}>
+            <Text style={styles.searchLabel}>Admin</Text>
+            <Text style={styles.modeDescription}>
+              Editörlerden gelen sarı feedback notlarını görüntüle, Codex komutunu
+              kopyala ve durumunu takip et.
+            </Text>
+          </View>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => onOpen('adminFeedback')}
+            style={({ pressed }) => [styles.adminButton, pressed ? styles.cardPressed : undefined]}
+          >
+            <Text style={styles.adminButtonText}>Editör feedbackleri</Text>
+          </Pressable>
+        </View>
+      ) : null}
 
       <View style={styles.searchPanel}>
         <Text style={styles.searchLabel}>Modül ara</Text>
@@ -1930,6 +1953,36 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     marginTop: 6,
     textAlign: 'center',
+  },
+  adminPanel: {
+    alignItems: 'center',
+    backgroundColor: '#fff7e6',
+    borderColor: '#f0c36a',
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    justifyContent: 'space-between',
+    padding: 14,
+  },
+  adminPanelTextWrap: {
+    flex: 1,
+    gap: 6,
+    minWidth: 220,
+  },
+  adminButton: {
+    alignItems: 'center',
+    backgroundColor: ACCENT,
+    borderRadius: 8,
+    minHeight: 42,
+    paddingHorizontal: 13,
+    paddingVertical: 11,
+  },
+  adminButtonText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '900',
   },
   searchPanel: {
     backgroundColor: '#fff',
