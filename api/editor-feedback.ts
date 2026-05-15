@@ -20,9 +20,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .json({ error: 'Supabase backend yapılandırılmamış. SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY gerekli.' });
     }
 
-    if (req.method === 'GET') return handleGet(res);
-    if (req.method === 'POST') return handlePost(req, res);
-    if (req.method === 'PATCH') return handlePatch(req, res);
+    if (req.method === 'GET') return await handleGet(res);
+    if (req.method === 'POST') return await handlePost(req, res);
+    if (req.method === 'PATCH') return await handlePatch(req, res);
 
     return res.status(405).json({ error: 'Method not allowed' });
   } catch (error) {
