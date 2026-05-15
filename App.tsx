@@ -1034,38 +1034,41 @@ function ConsentScreen({
   onToggle: () => void;
   onAccept: () => void;
 }) {
+  const [showDetails, setShowDetails] = useState(false);
+
   return (
     <ScrollView contentContainerStyle={styles.scrollContent}>
       <View style={styles.consentCard}>
-        <Text style={styles.screenKicker}>İlk kullanım onayı</Text>
-        <Text style={styles.screenTitle}>Klinik Kullanım Sınırı</Text>
-        <Text style={styles.screenDescription}>
-          Sol Açık açık kaynaklı bir eğitim, hatırlatma ve checklist aracıdır.
-          Klinik karar desteği, tanı koyucu sistem veya tedavi belirleyici araç
-          değildir.
+        <Text style={styles.screenKicker}>İlk kullanım</Text>
+        <Text style={styles.compactScreenTitle}>Klinik kullanım sınırı</Text>
+        <Text style={styles.compactDescription}>
+          Sol Açık eğitim/checklist aracıdır; tanı, reçete veya klinik karar yerine geçmez.
         </Text>
 
-        <View style={styles.consentBuildBox}>
-          <Text style={styles.consentBuildText}>
-            {appBuildInfo.buildLabel} · v{appBuildInfo.appVersion} · Build {appBuildInfo.buildDate}
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => setShowDetails((current) => !current)}
+          style={styles.detailsToggle}
+        >
+          <Text style={styles.detailsToggleText}>
+            {showDetails ? 'Ayrıntılı bilgilendirmeyi gizle' : 'Ayrıntılı bilgilendirmeyi göster'}
           </Text>
-          <Text style={styles.consentBuildText}>
-            İçerik güncelleme {appBuildInfo.contentLastUpdatedDate}
-          </Text>
-        </View>
+        </Pressable>
 
-        <View style={styles.consentTextBlock}>
-          <Text style={styles.consentBody}>
-            Yerel protokoller, güncel resmi kılavuzlar, kurum uygulamaları ve
-            klinisyen değerlendirmesi her zaman önceliklidir. Bilgiler gözden
-            geçirilerek hazırlanmış olsa da güncellik, uygunluk ve klinik kullanım
-            sorumluluğu kullanıcıdadır.
-          </Text>
-          <Text style={styles.consentBody}>
-            Bu uygulamaya hasta adı, TC kimlik numarası, doğum tarihi, telefon,
-            adres, hastane numarası veya tanımlanabilir sağlık verisi girilmemelidir.
-          </Text>
-        </View>
+        {showDetails ? (
+          <View style={styles.consentTextBlock}>
+            <Text style={styles.consentBody}>
+              Yerel protokoller, güncel resmi kılavuzlar, kurum uygulamaları ve
+              klinisyen değerlendirmesi her zaman önceliklidir. Bilgiler gözden
+              geçirilerek hazırlanmış olsa da güncellik, uygunluk ve klinik kullanım
+              sorumluluğu kullanıcıdadır.
+            </Text>
+            <Text style={styles.consentBody}>
+              Bu uygulamaya hasta adı, TC kimlik numarası, doğum tarihi, telefon,
+              adres, hastane numarası veya tanımlanabilir sağlık verisi girilmemelidir.
+            </Text>
+          </View>
+        ) : null}
 
         <Pressable
           accessibilityRole="checkbox"
@@ -1098,6 +1101,12 @@ function ConsentScreen({
         >
           <Text style={styles.consentButtonText}>Devam et</Text>
         </Pressable>
+
+        <View style={styles.compactBuildStrip}>
+          <Text style={styles.compactBuildText}>
+            Sol Açık kontrollü beta editör taslağı · v{appBuildInfo.appVersion} · Build {appBuildInfo.buildDate}
+          </Text>
+        </View>
       </View>
     </ScrollView>
   );
@@ -1123,15 +1132,14 @@ function AccessGateScreen({ onEnter }: { onEnter: (session: AccessSession) => vo
     <ScrollView contentContainerStyle={styles.scrollContent}>
       <View style={styles.accessCard}>
         <Text style={styles.screenKicker}>Kontrollü erişim</Text>
-        <Text style={styles.screenTitle}>{accessPolicy.buildLabel}</Text>
-        <Text style={styles.screenDescription}>{accessPolicy.warning}</Text>
+        <Text style={styles.compactScreenTitle}>Admin girişi</Text>
+        <Text style={styles.compactDescription}>
+          Şimdilik dış beta ve editör erişimi kapalı; yalnızca admin koduyla giriş yapılır.
+        </Text>
 
         <View style={styles.accessNoticeBox}>
-          <Text style={styles.accessNoticeTitle}>Gözlem modu kapalı</Text>
           <Text style={styles.accessNoticeText}>
-            Editör ve beta kullanıcı davetleri geçici olarak durduruldu. Şimdilik yalnızca
-            admin koduyla giriş yapılabilir; dış değerlendirme yeniden açıldığında yeni
-            davet metni paylaşılacaktır.
+            {accessPolicy.buildLabel} · Dış değerlendirme yeniden açıldığında yeni davet metni paylaşılacaktır.
           </Text>
         </View>
 
@@ -1170,6 +1178,12 @@ function AccessGateScreen({ onEnter }: { onEnter: (session: AccessSession) => vo
         >
           <Text style={styles.accessButtonText}>Sol Açık’a gir</Text>
         </Pressable>
+
+        <View style={styles.compactBuildStrip}>
+          <Text style={styles.compactBuildText}>
+            Sol Açık kontrollü beta editör taslağı · v{appBuildInfo.appVersion} · Build {appBuildInfo.buildDate}
+          </Text>
+        </View>
       </View>
     </ScrollView>
   );
@@ -1214,18 +1228,6 @@ function HomeScreen({
         <Text style={styles.heroBody}>
           Pediatrik pulmonologlar ve çocuk göğüs hastalıkları yan dal asistanları
           için, yoğun klinik akışta okunabilir kısa kontrol ekranları.
-        </Text>
-      </View>
-
-      <View style={styles.buildInfoStrip}>
-        <Text style={styles.buildInfoText}>
-          {appBuildInfo.buildLabel} · v{appBuildInfo.appVersion} · Build {appBuildInfo.buildDate}
-        </Text>
-        <Text style={styles.latestChangeText}>
-          İçerik güncelleme {appBuildInfo.contentLastUpdatedDate}: {appBuildInfo.latestChange}
-        </Text>
-        <Text style={styles.accessSessionText}>
-          Oturum: {accessSession.displayName} · {accessSession.roleLabel}
         </Text>
       </View>
 
@@ -1323,6 +1325,15 @@ function HomeScreen({
             </View>
           </View>
         ))}
+      </View>
+
+      <View style={styles.compactBuildStrip}>
+        <Text style={styles.compactBuildText}>
+          Sol Açık kontrollü beta editör taslağı · v{appBuildInfo.appVersion} · Build {appBuildInfo.buildDate} · İçerik {appBuildInfo.contentLastUpdatedDate}
+        </Text>
+        <Text style={styles.compactSessionText}>
+          {accessSession.displayName} · {accessSession.roleLabel}
+        </Text>
       </View>
     </ScrollView>
   );
@@ -2098,24 +2109,24 @@ const styles = StyleSheet.create({
     borderColor: '#ececee',
     borderRadius: 8,
     borderWidth: 1,
-    gap: 16,
-    padding: 18,
+    gap: 11,
+    padding: 14,
   },
   accessCard: {
     backgroundColor: '#fff',
     borderColor: '#ececee',
     borderRadius: 8,
     borderWidth: 1,
-    gap: 14,
-    padding: 18,
+    gap: 11,
+    padding: 14,
   },
   accessNoticeBox: {
     backgroundColor: '#fff7e6',
     borderColor: '#f0c36a',
     borderRadius: 8,
     borderWidth: 1,
-    gap: 5,
-    padding: 12,
+    paddingHorizontal: 9,
+    paddingVertical: 7,
   },
   accessNoticeTitle: {
     color: '#8a5a00',
@@ -2123,9 +2134,10 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
   accessNoticeText: {
-    color: TEXT,
-    fontSize: 13,
-    lineHeight: 19,
+    color: '#8a5a00',
+    fontSize: 11,
+    fontWeight: '800',
+    lineHeight: 15,
   },
   accessInputBlock: {
     gap: 6,
@@ -2169,8 +2181,8 @@ const styles = StyleSheet.create({
   consentTextBlock: {
     backgroundColor: CARD,
     borderRadius: 8,
-    gap: 10,
-    padding: 14,
+    gap: 8,
+    padding: 10,
   },
   consentBuildBox: {
     backgroundColor: '#fff7e6',
@@ -2190,8 +2202,45 @@ const styles = StyleSheet.create({
   },
   consentBody: {
     color: TEXT,
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  detailsToggle: {
+    alignSelf: 'flex-start',
+    backgroundColor: CARD,
+    borderColor: '#dfdfe3',
+    borderRadius: 999,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+  },
+  detailsToggleText: {
+    color: ACCENT,
+    fontSize: 11,
+    fontWeight: '900',
+  },
+  compactBuildStrip: {
+    backgroundColor: '#fff7e6',
+    borderColor: '#f0c36a',
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 2,
+    paddingHorizontal: 9,
+    paddingVertical: 6,
+  },
+  compactBuildText: {
+    color: '#8a5a00',
+    fontSize: 10,
+    fontWeight: '900',
+    lineHeight: 14,
+    textAlign: 'center',
+  },
+  compactSessionText: {
+    color: MUTED,
+    fontSize: 10,
+    fontWeight: '800',
+    lineHeight: 14,
+    textAlign: 'center',
   },
   consentCheckRow: {
     alignItems: 'flex-start',
@@ -2200,8 +2249,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     flexDirection: 'row',
-    gap: 12,
-    padding: 14,
+    gap: 9,
+    padding: 10,
   },
   consentCheckbox: {
     alignItems: 'center',
@@ -2373,10 +2422,21 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     lineHeight: 31,
   },
+  compactScreenTitle: {
+    color: TEXT,
+    fontSize: 20,
+    fontWeight: '900',
+    lineHeight: 25,
+  },
   screenDescription: {
     color: MUTED,
     fontSize: 15,
     lineHeight: 22,
+  },
+  compactDescription: {
+    color: MUTED,
+    fontSize: 13,
+    lineHeight: 18,
   },
   sectionCard: {
     backgroundColor: CARD,
