@@ -1,6 +1,6 @@
 import * as Clipboard from 'expo-clipboard';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { AccessSession } from '../../data/accessControl';
 import { submitEditorFeedback } from '../../services/editorFeedbackClient';
 
@@ -117,83 +117,110 @@ export function EditorFeedbackBox({
   }
 
   return (
-    <View style={styles.box}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Editör feedback alanı</Text>
-        <Text style={styles.badge}>{session.role === 'admin' ? 'Admin' : 'Editör'}</Text>
+    <>
+      <View style={styles.collapsedBox}>
+        <Text style={styles.collapsedText}>Feedback formu açık.</Text>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => setIsOpen(false)}
+          style={({ pressed }) => [styles.openButton, pressed ? styles.pressed : undefined]}
+        >
+          <Text style={styles.openButtonText}>Feedback alanını kapat</Text>
+        </Pressable>
       </View>
-      <Pressable
-        accessibilityRole="button"
-        onPress={() => setIsOpen(false)}
-        style={({ pressed }) => [styles.closeButton, pressed ? styles.pressed : undefined]}
+      <Modal
+        animationType="slide"
+        onRequestClose={() => setIsOpen(false)}
+        transparent
+        visible={isOpen}
       >
-        <Text style={styles.closeButtonText}>Feedback alanını kapat</Text>
-      </Pressable>
-      <Text style={styles.help}>
-        Bu sarı alan yalnızca admin/editör görünümünde çıkar. Hasta kimliği yazmayın;
-        eleştiri, öneri ve kaynak notu doğrudan editör havuzuna kaydedilir.
-      </Text>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <ScrollView
+              contentContainerStyle={styles.modalScrollContent}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator
+            >
+              <View style={styles.header}>
+                <Text style={styles.title}>Editör feedback alanı</Text>
+                <Text style={styles.badge}>{session.role === 'admin' ? 'Admin' : 'Editör'}</Text>
+              </View>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => setIsOpen(false)}
+                style={({ pressed }) => [styles.closeButton, pressed ? styles.pressed : undefined]}
+              >
+                <Text style={styles.closeButtonText}>Feedback alanını kapat</Text>
+              </Pressable>
+              <Text style={styles.help}>
+                Bu sarı alan yalnızca admin/editör görünümünde çıkar. Hasta kimliği yazmayın;
+                eleştiri, öneri ve kaynak notu doğrudan editör havuzuna kaydedilir.
+              </Text>
 
-      <OptionRow options={roleOptions} selected={clinicalRole} onSelect={setClinicalRole} />
-      <View style={styles.sectionBlock}>
-        <Text style={styles.label}>Katkı vermek istediğiniz alan</Text>
-        <OptionRow
-          options={contributionAreas}
-          selected={contributionArea}
-          onSelect={setContributionArea}
-        />
-      </View>
-      <OptionRow options={editOptions} selected={editIntent} onSelect={setEditIntent} />
+              <OptionRow options={roleOptions} selected={clinicalRole} onSelect={setClinicalRole} />
+              <View style={styles.sectionBlock}>
+                <Text style={styles.label}>Katkı vermek istediğiniz alan</Text>
+                <OptionRow
+                  options={contributionAreas}
+                  selected={contributionArea}
+                  onSelect={setContributionArea}
+                />
+              </View>
+              <OptionRow options={editOptions} selected={editIntent} onSelect={setEditIntent} />
 
-      <InputBlock
-        label="Eleştiri / sorun"
-        placeholder="Bu modülde ne eksik, hatalı veya belirsiz?"
-        value={feedback}
-        onChangeText={setFeedback}
-      />
-      <InputBlock
-        label="Önerilen düzenleme"
-        placeholder="Nasıl yazılsın veya hangi alan değişsin?"
-        value={suggestedEdit}
-        onChangeText={setSuggestedEdit}
-      />
-      <InputBlock
-        label="Kaynak / gerekçe"
-        placeholder="Kılavuz, makale, KÜB/KT veya kurum protokol notu"
-        value={sourceNote}
-        onChangeText={setSourceNote}
-      />
+              <InputBlock
+                label="Eleştiri / sorun"
+                placeholder="Bu modülde ne eksik, hatalı veya belirsiz?"
+                value={feedback}
+                onChangeText={setFeedback}
+              />
+              <InputBlock
+                label="Önerilen düzenleme"
+                placeholder="Nasıl yazılsın veya hangi alan değişsin?"
+                value={suggestedEdit}
+                onChangeText={setSuggestedEdit}
+              />
+              <InputBlock
+                label="Kaynak / gerekçe"
+                placeholder="Kılavuz, makale, KÜB/KT veya kurum protokol notu"
+                value={sourceNote}
+                onChangeText={setSourceNote}
+              />
 
-      {submitMessage ? (
-        <Text style={[styles.statusText, submitStatus === 'error' ? styles.errorText : styles.successText]}>
-          {submitMessage}
-        </Text>
-      ) : null}
+              {submitMessage ? (
+                <Text style={[styles.statusText, submitStatus === 'error' ? styles.errorText : styles.successText]}>
+                  {submitMessage}
+                </Text>
+              ) : null}
 
-      <View style={styles.actionRow}>
-        <Pressable
-          accessibilityRole="button"
-          disabled={submitStatus === 'sending'}
-          onPress={sendFeedback}
-          style={({ pressed }) => [
-            styles.submitButton,
-            submitStatus === 'sending' ? styles.disabledButton : undefined,
-            pressed ? styles.pressed : undefined,
-          ]}
-        >
-          <Text style={styles.submitText}>
-            {submitStatus === 'sending' ? 'Gönderiliyor...' : 'Feedback gönder'}
-          </Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          onPress={copyFeedback}
-          style={({ pressed }) => [styles.copyButton, pressed ? styles.pressed : undefined]}
-        >
-          <Text style={styles.copyText}>{copied ? 'Kopyalandı' : 'Yedek kopyala'}</Text>
-        </Pressable>
-      </View>
-    </View>
+              <View style={styles.actionRow}>
+                <Pressable
+                  accessibilityRole="button"
+                  disabled={submitStatus === 'sending'}
+                  onPress={sendFeedback}
+                  style={({ pressed }) => [
+                    styles.submitButton,
+                    submitStatus === 'sending' ? styles.disabledButton : undefined,
+                    pressed ? styles.pressed : undefined,
+                  ]}
+                >
+                  <Text style={styles.submitText}>
+                    {submitStatus === 'sending' ? 'Gönderiliyor...' : 'Feedback gönder'}
+                  </Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={copyFeedback}
+                  style={({ pressed }) => [styles.copyButton, pressed ? styles.pressed : undefined]}
+                >
+                  <Text style={styles.copyText}>{copied ? 'Kopyalandı' : 'Yedek kopyala'}</Text>
+                </Pressable>
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 }
 
@@ -291,6 +318,25 @@ const styles = StyleSheet.create({
     marginHorizontal: 18,
     marginTop: 10,
     padding: 12,
+  },
+  modalOverlay: {
+    backgroundColor: 'rgba(33, 31, 31, 0.28)',
+    flex: 1,
+    justifyContent: 'flex-end',
+    padding: 12,
+  },
+  modalCard: {
+    backgroundColor: '#fff7e6',
+    borderColor: '#f0c36a',
+    borderRadius: 12,
+    borderWidth: 1,
+    maxHeight: '88%',
+    overflow: 'hidden',
+  },
+  modalScrollContent: {
+    gap: 10,
+    padding: 12,
+    paddingBottom: 22,
   },
   header: {
     alignItems: 'center',
