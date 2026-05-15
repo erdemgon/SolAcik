@@ -948,7 +948,6 @@ export default function App() {
           </View>
         </View>
 
-        {clinicalMetadata ? <ClinicalSourcePanel metadata={clinicalMetadata} /> : null}
         {clinicalMetadata && accessSession.role !== 'beta' ? (
           <EditorFeedbackBox moduleTitle={clinicalMetadata.sourceTitle} session={accessSession} />
         ) : null}
@@ -1020,8 +1019,21 @@ export default function App() {
         ) : selectedScreen ? (
           <GuideDetail screen={selectedScreen} />
         ) : null}
+
+        {clinicalMetadata ? <ClinicalSourcePanel metadata={clinicalMetadata} /> : null}
+        <AppFooterStrip accessSession={accessSession} />
       </View>
     </SafeAreaView>
+  );
+}
+
+function AppFooterStrip({ accessSession }: { accessSession: AccessSession }) {
+  return (
+    <View style={styles.globalFooterStrip}>
+      <Text style={styles.globalFooterText} numberOfLines={1}>
+        Sol Açık kontrollü beta editör taslağı · v{appBuildInfo.appVersion} · Build {appBuildInfo.buildDate} · İçerik {appBuildInfo.contentLastUpdatedDate} · {accessSession.displayName} / {accessSession.roleLabel}
+      </Text>
+    </View>
   );
 }
 
@@ -1325,15 +1337,6 @@ function HomeScreen({
             </View>
           </View>
         ))}
-      </View>
-
-      <View style={styles.compactBuildStrip}>
-        <Text style={styles.compactBuildText}>
-          Sol Açık kontrollü beta editör taslağı · v{appBuildInfo.appVersion} · Build {appBuildInfo.buildDate} · İçerik {appBuildInfo.contentLastUpdatedDate}
-        </Text>
-        <Text style={styles.compactSessionText}>
-          {accessSession.displayName} · {accessSession.roleLabel}
-        </Text>
       </View>
     </ScrollView>
   );
@@ -1963,6 +1966,20 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     lineHeight: 16,
     marginTop: 6,
+    textAlign: 'center',
+  },
+  globalFooterStrip: {
+    backgroundColor: '#fff7e6',
+    borderTopColor: '#f0c36a',
+    borderTopWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  globalFooterText: {
+    color: '#8a5a00',
+    fontSize: 9,
+    fontWeight: '800',
+    lineHeight: 12,
     textAlign: 'center',
   },
   adminPanel: {

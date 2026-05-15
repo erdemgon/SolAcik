@@ -4,43 +4,34 @@ import type { ClinicalModuleMetadata } from '../../data/contentGovernance';
 export function ClinicalSourcePanel({ metadata }: { metadata: ClinicalModuleMetadata }) {
   return (
     <View style={styles.panel}>
-      <Text style={styles.title}>{metadata.sourceTitle}</Text>
-      <Text style={styles.meta}>
-        Kaynak sürümü: {metadata.sourceVersion} · Son kontrol: {metadata.lastCheckedDate}
+      <Text style={styles.meta} numberOfLines={1}>
+        {metadata.sourceTitle} · {metadata.sourceVersion} · Kontrol {metadata.lastCheckedDate} · Editör {metadata.clinicalEditor}
       </Text>
-      <Text style={styles.meta}>Klinik editör: {metadata.clinicalEditor}</Text>
-      <Text style={styles.disclaimer}>{metadata.disclaimer}</Text>
+      <Text style={styles.disclaimer} numberOfLines={2}>{metadata.disclaimer}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   panel: {
-    backgroundColor: '#f9e9ec',
-    borderColor: '#efcbd2',
-    borderRadius: 8,
-    borderWidth: 1,
-    gap: 5,
-    marginHorizontal: 18,
-    marginTop: 10,
+    backgroundColor: '#fafafa',
+    borderTopColor: '#eeeeef',
+    borderTopWidth: 1,
+    gap: 2,
     paddingHorizontal: 10,
-    paddingVertical: 8,
-  },
-  title: {
-    color: '#8f1d2c',
-    fontSize: 12,
-    fontWeight: '900',
-    lineHeight: 17,
+    paddingVertical: 5,
   },
   meta: {
-    color: '#5d5658',
-    fontSize: 11,
+    color: '#8f1d2c',
+    fontSize: 9,
     fontWeight: '700',
-    lineHeight: 15,
+    lineHeight: 12,
+    textAlign: 'center',
   },
   disclaimer: {
-    color: '#211f1f',
-    fontSize: 11,
-    lineHeight: 15,
+    color: '#686868',
+    fontSize: 9,
+    lineHeight: 12,
+    textAlign: 'center',
   },
 });
