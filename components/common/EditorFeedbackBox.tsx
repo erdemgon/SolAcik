@@ -2,6 +2,7 @@ import * as Clipboard from 'expo-clipboard';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { AccessSession } from '../../data/accessControl';
+import { submitEditorFeedback } from '../../services/editorFeedbackClient';
 
 const roleOptions = [
   'Çocuk göğüs uzmanı',
@@ -44,6 +45,8 @@ export function EditorFeedbackBox({
   const [suggestedEdit, setSuggestedEdit] = useState('');
   const [sourceNote, setSourceNote] = useState('');
   const [copied, setCopied] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [submitMessage, setSubmitMessage] = useState('');
 
   const feedbackText = [
     `Sol Açık editör feedback`,
@@ -62,6 +65,38 @@ export function EditorFeedbackBox({
   async function copyFeedback() {
     await Clipboard.setStringAsync(feedbackText);
     setCopied(true);
+  }
+
+  async function sendFeedback() {
+    if (!feedback.trim() && !suggestedEdit.trim()) {
+      setSubmitStatus('error');
+      setSubmitMessage('En azından eleştiri/sorun veya önerilen düzenleme alanını doldurun.');
+      return;
+    }
+
+    setSubmitStatus('sending');
+    setSubmitMessage('');
+
+    try {
+      await submitEditorFeedback({
+        appRole: session.roleLabel,
+        clinicalRole,
+        commandText: feedbackText,
+        contributionArea,
+        editIntent,
+        feedback: feedback.trim() || '-',
+        moduleTitle,
+        sourceNote: sourceNote.trim() || '-',
+        suggestedEdit: suggestedEdit.trim() || '-',
+        userName: session.displayName,
+      });
+      setSubmitStatus('sent');
+      setSubmitMessage('Feedback kaydedildi. Teşekkürler.');
+      setCopied(false);
+    } catch (error) {
+      setSubmitStatus('error');
+      setSubmitMessage(error instanceof Error ? error.message : 'Feedback gönderilemedi.');
+    }
   }
 
   if (!isOpen) {
@@ -96,7 +131,7 @@ export function EditorFeedbackBox({
       </Pressable>
       <Text style={styles.help}>
         Bu sarı alan yalnızca admin/editör görünümünde çıkar. Hasta kimliği yazmayın;
-        eleştiri, öneri ve kaynak notunu kopyalayıp klinik editör sorumlusuna iletin.
+        eleştiri, öneri ve kaynak notu doğrudan editör havuzuna kaydedilir.
       </Text>
 
       <OptionRow options={roleOptions} selected={clinicalRole} onSelect={setClinicalRole} />
@@ -129,13 +164,35 @@ export function EditorFeedbackBox({
         onChangeText={setSourceNote}
       />
 
-      <Pressable
-        accessibilityRole="button"
-        onPress={copyFeedback}
-        style={({ pressed }) => [styles.copyButton, pressed ? styles.pressed : undefined]}
-      >
-        <Text style={styles.copyText}>{copied ? 'Feedback kopyalandı' : 'Feedback metnini kopyala'}</Text>
-      </Pressable>
+      {submitMessage ? (
+        <Text style={[styles.statusText, submitStatus === 'error' ? styles.errorText : styles.successText]}>
+          {submitMessage}
+        </Text>
+      ) : null}
+
+      <View style={styles.actionRow}>
+        <Pressable
+          accessibilityRole="button"
+          disabled={submitStatus === 'sending'}
+          onPress={sendFeedback}
+          style={({ pressed }) => [
+            styles.submitButton,
+            submitStatus === 'sending' ? styles.disabledButton : undefined,
+            pressed ? styles.pressed : undefined,
+          ]}
+        >
+          <Text style={styles.submitText}>
+            {submitStatus === 'sending' ? 'Gönderiliyor...' : 'Feedback gönder'}
+          </Text>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          onPress={copyFeedback}
+          style={({ pressed }) => [styles.copyButton, pressed ? styles.pressed : undefined]}
+        >
+          <Text style={styles.copyText}>{copied ? 'Kopyalandı' : 'Yedek kopyala'}</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -324,18 +381,59 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     textAlignVertical: 'top',
   },
-  copyButton: {
+  actionRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  submitButton: {
     alignItems: 'center',
     backgroundColor: '#8a5a00',
     borderRadius: 8,
+    flexGrow: 1,
+    minHeight: 40,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  submitText: {
+    color: '#ffffff',
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  copyButton: {
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderColor: '#8a5a00',
+    borderRadius: 8,
+    borderWidth: 1,
+    flexGrow: 1,
     minHeight: 40,
     paddingHorizontal: 12,
     paddingVertical: 10,
   },
   copyText: {
-    color: '#ffffff',
+    color: '#8a5a00',
     fontSize: 13,
     fontWeight: '900',
+  },
+  disabledButton: {
+    opacity: 0.55,
+  },
+  statusText: {
+    borderRadius: 8,
+    fontSize: 12,
+    fontWeight: '900',
+    lineHeight: 17,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  successText: {
+    backgroundColor: '#ecfdf3',
+    color: '#166534',
+  },
+  errorText: {
+    backgroundColor: '#fff1f2',
+    color: '#9f1239',
   },
   pressed: {
     opacity: 0.72,
