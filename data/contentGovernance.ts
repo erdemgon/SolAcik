@@ -255,6 +255,15 @@ export const clinicalModuleMetadata: Record<string, ClinicalModuleMetadata> = {
     clinicalEditor: DEFAULT_EDITOR,
     disclaimer: DEFAULT_DISCLAIMER,
   },
+  oscillometry: {
+    moduleId: 'oscillometry',
+    sourceTitle: 'Impulse oscillometry / forced oscillation reference metadata',
+    sourceVersion:
+      'Device-specific metadata; Valach 2024 Resmon, Turkish preschool IOS and Brazilian IOS coefficients not bundled until verified',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
   spirometryGli: {
     moduleId: 'spirometryGli',
     sourceTitle: 'Global Lung Function Initiative',

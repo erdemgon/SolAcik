@@ -1,0 +1,123 @@
+import { OscReferenceSet } from '../../src/modules/oscillometry/referenceEngines/types';
+
+export const oscAllParameters = [
+  'R5',
+  'R10',
+  'R15',
+  'R20',
+  'R5_R20',
+  'X5',
+  'X10',
+  'X15',
+  'X20',
+  'AX',
+  'Fres',
+  'Z5',
+  'R8',
+  'X8',
+  'Z8',
+] as const;
+
+export const oscillometryReferenceSets: OscReferenceSet[] = [
+  {
+    id: 'raw_values_only',
+    label: 'No reference - raw values only',
+    device: 'Any IOS/FOT device',
+    technique: 'unknown',
+    population: 'Ham değer gösterimi; referans denklemi uygulanmaz.',
+    ageMin: null,
+    ageMax: null,
+    heightMinCm: null,
+    heightMaxCm: null,
+    sexSpecific: false,
+    parametersSupported: [...oscAllParameters],
+    formulaType: 'custom',
+    unit: 'canonical kPa units',
+    sourceCitation: 'No reference equation selected.',
+    coefficientsAvailable: false,
+    notes: 'Predicted, LLN, ULN ve z-skor üretilmez.',
+  },
+  {
+    id: 'valach_2024_resmon_6_17',
+    label: 'Valach 2024 - Resmon PRO FULL - children/adolescents 6-17y',
+    device: 'Resmon PRO FULL',
+    technique: 'FOT',
+    population: 'Healthy children/adolescents, 6-17 years; Resmon PRO FULL, 8 Hz dataset.',
+    ageMin: 6,
+    ageMax: 17,
+    heightMinCm: 101,
+    heightMaxCm: 183,
+    sexSpecific: true,
+    parametersSupported: ['R8', 'X8', 'Z8'],
+    formulaType: 'LMS',
+    unit: 'kPa/L/s',
+    sourceCitation:
+      'Valach C, et al. Oscillometry reference values for children and adolescents. ERJ Open Research. 2024;10(6):00278-2024. doi:10.1183/23120541.00278-2024. Coefficient JSON not yet verified in Sol Açık.',
+    coefficientsAvailable: false,
+    notes:
+      'Makaledeki LMS katsayıları doğrulanmış local JSON olarak eklenmeden hesaplama kapalıdır.',
+  },
+  {
+    id: 'turkish_preschool_ios_metadata',
+    label: 'Turkish preschool IOS reference - metadata only until coefficients verified',
+    device: 'IOS',
+    technique: 'IOS',
+    population: 'Turkish preschool children; metadata placeholder.',
+    ageMin: null,
+    ageMax: null,
+    heightMinCm: null,
+    heightMaxCm: null,
+    sexSpecific: true,
+    parametersSupported: ['R5', 'R10', 'R15', 'R20', 'X5', 'AX', 'Fres', 'Z5'],
+    formulaType: 'custom',
+    unit: 'kPa/L/s',
+    sourceCitation:
+      'Impulse oscillometry reference values and correlation with predictors in Turkish preschool children. Turkish Journal of Pediatrics 2019;61:560-567. Coefficients require source verification before use.',
+    coefficientsAvailable: false,
+    notes: 'Kaynak ve katsayılar klinik editör tarafından doğrulanana kadar yalnız metadata olarak tutulur.',
+  },
+  {
+    id: 'brazilian_ios_metadata',
+    label: 'Brazilian IOS reference - children/adolescents - metadata only until coefficients verified',
+    device: 'IOS',
+    technique: 'IOS',
+    population: 'Brazilian children/adolescents; metadata placeholder.',
+    ageMin: null,
+    ageMax: null,
+    heightMinCm: null,
+    heightMaxCm: null,
+    sexSpecific: true,
+    parametersSupported: ['R5', 'R20', 'R5_R20', 'X5', 'AX', 'Fres', 'Z5'],
+    formulaType: 'custom',
+    unit: 'kPa/L/s',
+    sourceCitation:
+      'de Assumpção MS, et al. Reference Equations for Impulse Oscillometry System Parameters in Healthy Brazilian Children and Adolescents. Respir Care. 2016;61(8):1090-1099. doi:10.4187/respcare.04226. Coefficients require source verification before use.',
+    coefficientsAvailable: false,
+    notes: 'Doğrulanmış katsayı JSON dosyası eklenmeden predicted/z-skor hesaplanmaz.',
+  },
+  {
+    id: 'custom_local_reference',
+    label: 'Custom local reference set',
+    device: 'Other / Unknown',
+    technique: 'unknown',
+    population: 'Local verified coefficient JSON import.',
+    ageMin: null,
+    ageMax: null,
+    heightMinCm: null,
+    heightMaxCm: null,
+    sexSpecific: true,
+    parametersSupported: [...oscAllParameters],
+    formulaType: 'custom',
+    unit: 'canonical kPa units',
+    sourceCitation: 'Local custom coefficient JSON; not bundled by default.',
+    coefficientsAvailable: false,
+    notes: 'JSON katsayı import desteği şema olarak hazırdır; bundled katsayı yoktur.',
+  },
+];
+
+export function getOscReferenceSet(referenceSetId: string) {
+  return (
+    oscillometryReferenceSets.find((referenceSet) => referenceSet.id === referenceSetId) ??
+    oscillometryReferenceSets[0]
+  );
+}

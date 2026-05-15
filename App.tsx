@@ -16,6 +16,7 @@ import { CftrModulatorScreen } from './modules/cftr-modulator';
 import { InhaledMedicationsScreen } from './modules/inhaled-medications';
 import { SpirometryGliScreen } from './modules/spirometry-gli';
 import { PulmonaryFunctionScreen } from './modules/pulmonary-function';
+import { OscillometryScreen } from './modules/oscillometry/OscillometryScreen';
 import { ChronicCoughScreen } from './modules/chronic-cough';
 import { AsthmaBiologicsScreen } from './modules/asthma-biologics';
 import { BronchiolitisScreen } from './modules/bronchiolitis';
@@ -83,6 +84,7 @@ type ScreenKey =
   | 'inhaledMedications'
   | 'systemicSteroids'
   | 'pulmonaryFunction'
+  | 'oscillometry'
   | 'spirometryGli'
   | 'immunologyReference'
   | 'balReference'
@@ -403,6 +405,13 @@ const categoryModules: Record<string, ModuleLink[]> = {
       target: 'pulmonaryFunction',
       group: 'Solunum Fonksiyon',
       aliases: ['PFT', 'SFT', 'TLCO', 'DLCO', 'VA', 'KCO', 'TLC', 'RV', 'FRC', 'MBW', 'LCI', 'GLI'],
+    },
+    {
+      title: 'IOS / Oscillometry',
+      description: 'Cihaz ve referans seti seçilerek osilometri ham değer / z-skor yorumlama ekranı.',
+      target: 'oscillometry',
+      group: 'Solunum Fonksiyon',
+      aliases: ['IOS', 'FOT', 'AOS', 'osilometri', 'oscillometry', 'R5', 'X5', 'AX', 'Fres', 'Resmon', 'Tremoflo'],
     },
     {
       title: 'İmmünolojik Değerler',
@@ -996,6 +1005,8 @@ export default function App() {
           <SystemicSteroidsScreen />
         ) : activeScreen === 'pulmonaryFunction' ? (
           <PulmonaryFunctionScreen />
+        ) : activeScreen === 'oscillometry' ? (
+          <OscillometryScreen />
         ) : activeScreen === 'spirometryGli' ? (
           <SpirometryGliScreen />
         ) : activeScreen === 'immunologyReference' ? (
