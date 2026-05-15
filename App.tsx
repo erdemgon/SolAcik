@@ -15,6 +15,7 @@ import { AsthmaManagementScreen } from './modules/asthma-management';
 import { CftrModulatorScreen } from './modules/cftr-modulator';
 import { InhaledMedicationsScreen } from './modules/inhaled-medications';
 import { SpirometryGliScreen } from './modules/spirometry-gli';
+import { PulmonaryFunctionScreen } from './modules/pulmonary-function';
 import { ChronicCoughScreen } from './modules/chronic-cough';
 import { AsthmaBiologicsScreen } from './modules/asthma-biologics';
 import { BronchiolitisScreen } from './modules/bronchiolitis';
@@ -81,6 +82,7 @@ type ScreenKey =
   | 'cftrModulator'
   | 'inhaledMedications'
   | 'systemicSteroids'
+  | 'pulmonaryFunction'
   | 'spirometryGli'
   | 'immunologyReference'
   | 'balReference'
@@ -395,6 +397,13 @@ const categoryModules: Record<string, ModuleLink[]> = {
     },
   ],
   categoryReferences: [
+    {
+      title: 'Pulmonary Function / Solunum Fonksiyonları',
+      description: 'Spirometri, TLCO/DLCO, akciğer volümleri ve MBW için birleşik yorum ekranı.',
+      target: 'pulmonaryFunction',
+      group: 'Solunum Fonksiyon',
+      aliases: ['PFT', 'SFT', 'TLCO', 'DLCO', 'VA', 'KCO', 'TLC', 'RV', 'FRC', 'MBW', 'LCI', 'GLI'],
+    },
     {
       title: 'İmmünolojik Değerler',
       description: 'Türkiye çocuk verisiyle yaşa göre IgG, IgA, IgM ve IgG alt grup referansları.',
@@ -985,6 +994,8 @@ export default function App() {
           <InhaledMedicationsScreen />
         ) : activeScreen === 'systemicSteroids' ? (
           <SystemicSteroidsScreen />
+        ) : activeScreen === 'pulmonaryFunction' ? (
+          <PulmonaryFunctionScreen />
         ) : activeScreen === 'spirometryGli' ? (
           <SpirometryGliScreen />
         ) : activeScreen === 'immunologyReference' ? (

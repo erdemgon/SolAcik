@@ -246,6 +246,15 @@ export const clinicalModuleMetadata: Record<string, ClinicalModuleMetadata> = {
     clinicalEditor: DEFAULT_EDITOR,
     disclaimer: DEFAULT_DISCLAIMER,
   },
+  pulmonaryFunction: {
+    moduleId: 'pulmonaryFunction',
+    sourceTitle: 'Global Lung Function Initiative ve PFT referans motoru taslağı',
+    sourceVersion:
+      'Spirometri GLI motoru korunur; TLCO/volüm/MBW yerel katsayı veya backend bağlanana kadar predicted üretmez',
+    lastCheckedDate: LAST_CHECKED,
+    clinicalEditor: DEFAULT_EDITOR,
+    disclaimer: DEFAULT_DISCLAIMER,
+  },
   spirometryGli: {
     moduleId: 'spirometryGli',
     sourceTitle: 'Global Lung Function Initiative',
