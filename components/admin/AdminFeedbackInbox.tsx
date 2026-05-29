@@ -45,6 +45,22 @@ export function AdminFeedbackInbox() {
     setMessage(`${item.moduleTitle} için Codex komutu kopyalandı.`);
   }
 
+  async function copyAllFeedback() {
+    const backup = [
+      `Sol Açık editör feedback yedeği`,
+      `Kayıt sayısı: ${items.length}`,
+      `Dışa aktarma: ${new Date().toLocaleString('tr-TR')}`,
+      '',
+      ...items.map((item, index) => formatFeedbackForBackup(item, index + 1)),
+      '',
+      'JSON:',
+      JSON.stringify(items, null, 2),
+    ].join('\n');
+
+    await Clipboard.setStringAsync(backup);
+    setMessage(`${items.length} feedback kaydı panoya kopyalandı.`);
+  }
+
   async function changeStatus(item: EditorFeedbackRecord, status: EditorFeedbackStatus) {
     setUpdatingId(item.id);
     setMessage('');
@@ -69,13 +85,28 @@ export function AdminFeedbackInbox() {
           Klinik içerik otomatik değişmez; uygun bulunan kayıtlar Codex’e komut olarak
           kopyalanıp ayrıca uygulanır.
         </Text>
-        <Pressable
-          accessibilityRole="button"
-          onPress={loadFeedback}
-          style={({ pressed }) => [styles.primaryButton, pressed ? styles.pressed : undefined]}
-        >
-          <Text style={styles.primaryButtonText}>{loading ? 'Yükleniyor...' : 'Yenile'}</Text>
-        </Pressable>
+        <View style={styles.actionRow}>
+          <Pressable
+            accessibilityRole="button"
+            onPress={loadFeedback}
+            style={({ pressed }) => [styles.primaryButton, styles.flexButton, pressed ? styles.pressed : undefined]}
+          >
+            <Text style={styles.primaryButtonText}>{loading ? 'Yükleniyor...' : 'Yenile'}</Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            disabled={items.length === 0}
+            onPress={copyAllFeedback}
+            style={({ pressed }) => [
+              styles.secondaryButton,
+              styles.flexButton,
+              items.length === 0 ? styles.disabled : undefined,
+              pressed ? styles.pressed : undefined,
+            ]}
+          >
+            <Text style={styles.secondaryButtonText}>Tüm feedbackleri kopyala</Text>
+          </Pressable>
+        </View>
         {message ? <Text style={styles.message}>{message}</Text> : null}
       </View>
 
@@ -157,6 +188,24 @@ function formatDate(value: string) {
     month: '2-digit',
     year: 'numeric',
   });
+}
+
+function formatFeedbackForBackup(item: EditorFeedbackRecord, index: number) {
+  return [
+    `--- #${index} ${item.moduleTitle} ---`,
+    `ID: ${item.id}`,
+    `Tarih: ${formatDate(item.createdAt)}`,
+    `Durum: ${statusLabels[item.status]}`,
+    `Kullanıcı: ${item.userName}`,
+    `Uygulama rolü: ${item.appRole}`,
+    `Klinik rol: ${item.clinicalRole}`,
+    `Katkı alanı: ${item.contributionArea}`,
+    `Düzenleme niyeti: ${item.editIntent}`,
+    `Eleştiri/sorun: ${item.feedback}`,
+    `Önerilen düzenleme: ${item.suggestedEdit}`,
+    `Kaynak/gerekçe: ${item.sourceNote}`,
+    `Codex komutu:\n${item.commandText}`,
+  ].join('\n');
 }
 
 function statusStyle(status: EditorFeedbackStatus) {
@@ -298,6 +347,21 @@ const styles = StyleSheet.create({
   },
   primaryButtonText: {
     color: '#fff',
+    fontSize: 13,
+    fontWeight: '900',
+  },
+  secondaryButton: {
+    alignItems: 'center',
+    backgroundColor: '#fff7e6',
+    borderColor: '#f0c36a',
+    borderRadius: 8,
+    borderWidth: 1,
+    minHeight: 42,
+    paddingHorizontal: 12,
+    paddingVertical: 11,
+  },
+  secondaryButtonText: {
+    color: '#8a5a00',
     fontSize: 13,
     fontWeight: '900',
   },
