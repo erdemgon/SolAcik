@@ -81,11 +81,12 @@ hastane numarasi veya tanimlayici saglik verisi yazilmamalidir.
 
 ## Ucretsiz Plan / Proje Askıya Alma Notu
 
-Bu repoda Supabase projesini yapay olarak aktif tutmak icin zamanlanmis keep-alive
-ping'i kullanilmamalidir. Supabase ucretsiz plan limitleri ve inactivity/suspension
-kurallari servis kosullarina gore yonetilir.
+Supabase ucretsiz plan limitleri ve inactivity/suspension kurallari servis
+kosullarina gore yonetilir. Uzun sure hic kullanim olmazsa proje Supabase
+tarafinda pause/suspend olabilir; bu durumda Supabase panelinden proje tekrar
+etkinlestirilmeli veya gereksinim artarsa uygun plana gecilmelidir.
 
-Feedback sistemi gercek kullanici islemleri oldugunda calisir. Uzun sure hic
-kullanim olmazsa proje Supabase tarafinda pause/suspend olabilir; bu durumda
-Supabase panelinden proje tekrar etkinlestirilmeli veya gereksinim artarsa uygun
-plana gecilmelidir.
+Pause riskini azaltmak icin opsiyonel GitHub Actions keepalive workflow'u
+eklenmistir. Kurulum ve sinirlar icin `docs/supabase-keepalive.md` dosyasina
+bakin. Bu workflow garanti degil, yalnizca haftada iki kez hafif bir okuma
+istegi atan dusuk riskli bir onlemdir.
