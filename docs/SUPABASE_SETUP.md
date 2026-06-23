@@ -90,3 +90,8 @@ Pause riskini azaltmak icin opsiyonel GitHub Actions keepalive workflow'u
 eklenmistir. Kurulum ve sinirlar icin `docs/supabase-keepalive.md` dosyasina
 bakin. Bu workflow garanti degil, yalnizca haftada iki kez hafif bir okuma
 istegi atan dusuk riskli bir onlemdir.
+
+## Haftalik Yedek
+
+Feedback verileri icin haftalik sifreli Supabase backup workflow'u eklenmistir.
+Kurulum ve geri acma notlari icin `docs/supabase-backup.md` dosyasina bakin.

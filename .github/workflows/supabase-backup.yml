@@ -1,0 +1,41 @@
+name: Supabase encrypted backup
+
+on:
+  schedule:
+    - cron: "47 2 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Supabase JSON backup
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          BACKUP_TABLES: editor_feedback
+        run: node scripts/supabase-backup.mjs
+
+      - name: Encrypt backup
+        env:
+          BACKUP_ENCRYPTION_PASSWORD: ${{ secrets.BACKUP_ENCRYPTION_PASSWORD }}
+        run: |
+          test -n "$BACKUP_ENCRYPTION_PASSWORD"
+          tar -czf supabase-backup.tar.gz backup
+          openssl enc -aes-256-cbc -salt -pbkdf2 -iter 200000 \
+            -in supabase-backup.tar.gz \
+            -out supabase-backup.tar.gz.enc \
+            -pass env:BACKUP_ENCRYPTION_PASSWORD
+
+      - name: Upload encrypted backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sol-acik-supabase-backup-${{ github.run_id }}
+          path: supabase-backup.tar.gz.enc
+          retention-days: 30
